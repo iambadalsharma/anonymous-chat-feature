@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anonymous Moderated Chat</title>
+    <style>
+        /* Simple CSS for the chat interface */
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f4f4f4; }
+        #chat-container { max-width: 600px; margin: 0 auto; background: #fff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        #messages { list-style-type: none; padding: 10px; margin: 0; height: 300px; overflow-y: scroll; border-bottom: 1px solid #eee; }
+        #messages li { padding: 8px 10px; border-bottom: 1px solid #f9f9f9; }
+        .message-header { font-size: 0.8em; color: #777; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
+        .message-content { font-size: 1em; color: #333; word-wrap: break-word; }
+        .delete-btn { color: red; cursor: pointer; font-size: 0.9em; margin-left: 10px; visibility: hidden; }
+        .creator-message .delete-btn { visibility: visible; }
+        #form { display: flex; padding: 10px; border-top: 1px solid #eee; }
+        #input { flex-grow: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px 0 0 4px; outline: none; }
+        #form button { background: #5cb85c; color: white; border: none; padding: 10px 15px; border-radius: 0 4px 4px 0; cursor: pointer; }
+        #join-form { display: flex; gap: 10px; margin-bottom: 20px; }
+        .system-message { color: orange; font-style: italic; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <h1>Anonymous Moderated Chat</h1>
+    <div id="join-form">
+        <input id="room-input" type="text" placeholder="Enter Room ID" value="default-room" required>
+        <button onclick="joinChat()">Join/Create Room</button>
+    </div>
+
+    <div id="chat-container" style="display: none;">
+        <h3 id="room-info"></h3>
+        <ul id="messages"></ul>
+        <form id="form">
+            <input id="input" autocomplete="off" placeholder="Type a message..." required />
+            <button>Send</button>
+        </form>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script>
+        let socket;
+        let currentRoomId;
+        let isModerator = false;
+        let anonymousUser;
+
+        const messages = document.getElementById('messages');
+        const form = document.getElementById('form');
+        const input = document.getElementById('input');
+        const chatContainer = document.getElementById('chat-container');
+        const roomInfo = document.getElementById('room-info');
+        const roomInput = document.getElementById('room-input');
+
+        function joinChat() {
+            currentRoomId = roomInput.value.trim();
+            if (!currentRoomId) return alert('Please enter a Room ID');
+
+            // Connect to the server
+            // The default URL is the server serving this page (http://localhost:3000)
+            socket = io();
+
+            socket.on('connect', () => {
+                // Send join request to the server
+                socket.emit('joinRoom', currentRoomId);
+            });
+
+            // --- Handler: Room Joined Confirmation ---
+            socket.on('roomJoined', (data) => {
+                isModerator = data.isCreator;
+                anonymousUser = data.anonymousId;
+                
+                roomInfo.textContent = `Room: ${data.roomId} | User: ${data.anonymousId}`;
+                chatContainer.style.display = 'block';
+                document.getElementById('join-form').style.display = 'none';
+
+                // Load history
+                data.history.forEach(msg => displayMessage(msg));
+            });
+            
+            // --- Handler: New Incoming Message ---
+            socket.on('message', (msg) => {
+                displayMessage(msg);
+            });
+
+            // --- Handler: Message Deleted by Moderator ---
+            socket.on('messageDeleted', (data) => {
+                const li = document.getElementById(`msg-${data.messageId}`);
+                if (li) {
+                    li.innerHTML = '<span class="system-message">--- Message Deleted by Moderator ---</span>';
+                    li.classList.remove('creator-message'); // Remove moderator styling
+                }
+            });
+
+            // --- Handler: System Messages (e.g., user joined, errors) ---
+            socket.on('systemMessage', (message) => {
+                const li = document.createElement('li');
+                li.classList.add('system-message');
+                li.textContent = message;
+                messages.appendChild(li);
+                messages.scrollTop = messages.scrollHeight;
+            });
+
+            // --- Handle Form Submission (Sending Message) ---
+            form.onsubmit = (e) => {
+                e.preventDefault();
+                if (input.value) {
+                    socket.emit('chatMessage', {
+                        roomId: currentRoomId,
+                        anonymousId: anonymousUser,
+                        message: input.value
+                    });
+                    input.value = '';
+                }
+            };
+        }
+
+        // Function to create the message element and append to the list
+        function displayMessage(msg) {
+            const li = document.createElement('li');
+            li.id = `msg-${msg.id}`; // Add unique ID for deletion targeting
+
+            const isOwnMessage = msg.sender === anonymousUser;
+            const isCreatorMessage = isModerator;
+
+            // Header (Sender, Time, and Delete Button)
+            const header = document.createElement('div');
+            header.classList.add('message-header');
+            
+            const senderSpan = document.createElement('span');
+            senderSpan.innerHTML = `<strong>${msg.sender}</strong> <small>(${msg.timestamp})</small>`;
+            header.appendChild(senderSpan);
+
+            // Only the moderator sees the delete button
+            if (isCreatorMessage) {
+                const deleteBtn = document.createElement('span');
+                deleteBtn.classList.add('delete-btn');
+                deleteBtn.textContent = '❌ Delete';
+                deleteBtn.onclick = () => {
+                    if (confirm('Are you sure you want to delete this message?')) {
+                        socket.emit('deleteMessage', {
+                            roomId: currentRoomId,
+                            messageId: msg.id
+                        });
+                    }
+                };
+                header.appendChild(deleteBtn);
+                li.classList.add('creator-message'); // Add class to show delete button
+            }
+            
+            li.appendChild(header);
+
+            // Content
+            const content = document.createElement('div');
+            content.classList.add('message-content');
+            content.textContent = msg.text;
+            li.appendChild(content);
+
+            messages.appendChild(li);
+            messages.scrollTop = messages.scrollHeight; // Scroll to bottom
+        }
+    </script>
+</body>
+</html>
