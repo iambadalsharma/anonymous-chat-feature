@@ -7,16 +7,58 @@
     <style>
         /* Simple CSS for the chat interface */
         body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f4f4f4; }
-        #chat-container { max-width: 600px; margin: 0 auto; background: #fff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        #messages { list-style-type: none; padding: 10px; margin: 0; height: 300px; overflow-y: scroll; border-bottom: 1px solid #eee; }
-        #messages li { padding: 8px 10px; border-bottom: 1px solid #f9f9f9; }
+        #chat-container {
+    max-width: 600px;
+    margin: 20px auto; /* Add margin for spacing */
+    background: #fff;
+    border-radius: 12px; /* Smoother corners */
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15); /* Stronger shadow */
+    overflow: hidden; /* Contains children */
+    padding: 0;
+}
+        #messages {
+    list-style-type: none;
+    padding: 15px;
+    margin: 0;
+    height: 400px; /* Increased height */
+    overflow-y: auto;
+    background-color: #f7f9fc; /* Light background for messages area */
+}
+
+#messages li {
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+        .own-message {
+    text-align: right;
+    background-color: #dcf8c6; /* Green bubble for self */
+}
         .message-header { font-size: 0.8em; color: #777; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
         .message-content { font-size: 1em; color: #333; word-wrap: break-word; }
-        .delete-btn { color: red; cursor: pointer; font-size: 0.9em; margin-left: 10px; visibility: hidden; }
-        .creator-message .delete-btn { visibility: visible; }
-        #form { display: flex; padding: 10px; border-top: 1px solid #eee; }
+        .delete-btn {
+    color: #cc0000;
+    cursor: pointer;
+    font-size: 0.8em;
+    margin-left: 10px;
+    visibility: hidden; 
+}
+        .creator-message .delete-btn,
+.self-delete-message .delete-btn { 
+    visibility: visible; 
+}
+        #form {
+    display: flex;
+    padding: 10px;
+    background-color: #ffffff;
+    border-top: 1px solid #eee;
+}
         #input { flex-grow: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px 0 0 4px; outline: none; }
-        #form button { background: #5cb85c; color: white; border: none; padding: 10px 15px; border-radius: 0 4px 4px 0; cursor: pointer; }
+        #form button {
+    background: #007bff; /* Primary blue button */
+}
         #join-form { display: flex; gap: 10px; margin-bottom: 20px; }
         .system-message { color: orange; font-style: italic; font-size: 0.9em; }
     </style>
