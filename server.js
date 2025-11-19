@@ -16,20 +16,15 @@ const io = new Server(server, {
 app.use(express.static(__dirname));
 
 // --- In-Memory State ---
-// rooms structure: 
-// { 
-//   'roomId': { 
-//      adminCode: 'secret-password', 
-//      messages: [ {id, text, senderName, senderId, timestamp, type} ] 
-//   } 
-// }
+// This stores all chat history and the admin code for each room.
 const rooms = {}; 
 let messageCounter = 1; 
 
 io.on('connection', (socket) => {
     console.log(`New connection: ${socket.id}`);
 
-    // --- 1. Join or Create Room ---
+    // --- 1. Join or Create Room (Handles Creator Persistence) ---
+    // The client sends the adminCode from its Local Storage for verification
     socket.on('joinRoom', ({ roomId, username, adminCode }) => {
         socket.join(roomId);
 
@@ -38,8 +33,7 @@ io.on('connection', (socket) => {
 
         // A. Room Creation (if it doesn't exist)
         if (!room) {
-            // Create new room
-            // If user provided an adminCode, set it. Otherwise generate a random one.
+            // Create new room, use the provided adminCode if available, otherwise generate new
             const code = adminCode || Math.random().toString(36).substring(2, 10);
             
             rooms[roomId] = { 
@@ -47,20 +41,17 @@ io.on('connection', (socket) => {
                 messages: [] 
             };
             room = rooms[roomId];
-            
-            // First user is always creator if they just created it
             isCreator = true;
         } 
         // B. Room Exists - Check Credentials
         else {
-            // Check if the provided code matches the room's admin code
+            // If the provided adminCode matches the room's stored adminCode, grant creator access
             if (adminCode && room.adminCode === adminCode) {
                 isCreator = true;
             }
         }
 
         // Determine Display Name
-        // If username is provided, use it. Otherwise generate Guest ID.
         const displayName = username && username.trim() !== "" 
             ? username 
             : `Guest-${Math.floor(Math.random() * 10000)}`;
@@ -68,14 +59,15 @@ io.on('connection', (socket) => {
         // Send setup data back to the client
         socket.emit('roomJoined', {
             roomId: roomId,
-            userId: socket.id,      // This session's unique ID
-            username: displayName,  // The public display name
-            isCreator: isCreator,   // Private flag: Am I admin?
-            adminCode: isCreator ? room.adminCode : null, // Send code back only if authorized
+            userId: socket.id,      
+            username: displayName,  
+            isCreator: isCreator,   
+            // Send the admin code back only if the user is the creator (for persistence)
+            adminCode: room.adminCode, 
             history: room.messages
         });
         
-        // Notify others (Don't reveal if they are admin!)
+        // Notify others
         socket.to(roomId).emit('systemMessage', `${displayName} has joined.`);
     });
 
@@ -87,7 +79,7 @@ io.on('connection', (socket) => {
         const newMessage = {
             id: messageId,
             senderName: username, 
-            senderId: socket.id, // Store socket ID to allow self-deletion
+            senderId: socket.id, 
             text: message,
             timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             type: 'text'
@@ -100,9 +92,9 @@ io.on('connection', (socket) => {
         io.to(roomId).emit('message', newMessage);
     });
 
-    // --- 3. Handle Message Deletion (Stealth Moderator or Self) ---
+    // --- 3. Handle Message Deletion (Moderator OR Self-Deletion) ---
     socket.on('deleteMessage', (data) => {
-        const { roomId, messageId, adminCode } = data;
+        const { roomId, messageId, adminCode } = data; // adminCode is passed from client (Local Storage)
         const room = rooms[roomId];
 
         if (!room) return;
@@ -112,16 +104,13 @@ io.on('connection', (socket) => {
         
         const message = room.messages[messageIndex];
 
-        // Check Permissions
         // 1. Is this user the Admin? (Codes match)
         const isAdmin = room.adminCode === adminCode;
         // 2. Is this user the original sender?
         const isSender = message.senderId === socket.id;
         
         if (isAdmin || isSender) {
-            // Remove from memory
             room.messages.splice(messageIndex, 1);
-            // Tell everyone to remove it from UI
             io.to(roomId).emit('messageDeleted', { messageId });
         } else {
             socket.emit('systemMessage', 'Error: Permission denied.');
@@ -129,7 +118,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('disconnect', () => {
-        // We do NOT clear the room here, so history persists if users rejoin.
+        console.log(`User disconnected: ${socket.id}`);
     });
 });
 
