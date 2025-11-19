@@ -28,32 +28,38 @@ io.on('connection', (socket) => {
     console.log(`New user connected: ${socket.id}`);
 
     // --- 1. Join or Create Room ---
-    socket.on('joinRoom', (roomId) => {
-        socket.join(roomId);
+    // --- Updated joinRoom handler in server.js ---
+socket.on('joinRoom', ({ roomId, creatorToken }) => {
+    socket.join(roomId);
 
-        // Determine if this user is the creator (moderator)
-        let isCreator = false;
-        if (!rooms[roomId]) {
-            // New room: current user is the creator/moderator
-            rooms[roomId] = { creatorId: socket.id, messages: [] };
-            isCreator = true;
-            console.log(`Room ${roomId} created by ${socket.id}`);
-        }
+    let isCreator = false;
+    let newCreatorToken = creatorToken;
 
-        // Assign an anonymous user ID
-        const anonymousId = isCreator ? 'Creator (You)' : `Guest-${Math.floor(Math.random() * 1000)}`;
+    if (!rooms[roomId]) {
+        // New room: Current user is the creator. Generate a unique token.
+        newCreatorToken = Math.random().toString(36).substring(2, 15);
+        rooms[roomId] = { creatorToken: newCreatorToken, messages: [] };
+        isCreator = true;
+    } else if (rooms[roomId].creatorToken === creatorToken && creatorToken) {
+        // Existing room, and the user provided the correct creator token
+        isCreator = true;
+    }
 
-        // Send confirmation and chat history to the joining client
-        socket.emit('roomJoined', {
-            roomId: roomId,
-            anonymousId: anonymousId,
-            isCreator: isCreator,
-            history: rooms[roomId].messages
-        });
-        
-        // Notify others
-        socket.to(roomId).emit('systemMessage', `${anonymousId} has joined the room.`);
+    // Assign anonymous ID
+    const anonymousId = isCreator ? 'Creator (You)' : `Guest-${Math.floor(Math.random() * 1000)}`;
+
+    // Send back the token and status
+    socket.emit('roomJoined', {
+        roomId: roomId,
+        anonymousId: anonymousId,
+        isCreator: isCreator,
+        creatorToken: newCreatorToken, // Send back the token for client storage
+        history: rooms[roomId].messages
     });
+    
+    // Notify others
+    socket.to(roomId).emit('systemMessage', `${anonymousId} has joined the room.`);
+});
 
     // --- 2. Handle New Messages ---
     socket.on('chatMessage', (data) => {
@@ -78,27 +84,24 @@ io.on('connection', (socket) => {
     });
 
     // --- 3. Handle Message Deletion (Moderator Action) ---
-    socket.on('deleteMessage', (data) => {
-        const { roomId, messageId } = data;
-        const room = rooms[roomId];
+// --- Update deleteMessage handler in server.js to check creatorToken ---
+socket.on('deleteMessage', (data) => {
+    const { roomId, messageId, creatorToken } = data; // Receive token
+    const room = rooms[roomId];
 
-        // --- SECURITY CHECK ---
-        // Only the room creator (moderator) can delete messages
-        if (room && room.creatorId === socket.id) {
-            // Find and remove the message from the in-memory state
-            const initialLength = room.messages.length;
-            room.messages = room.messages.filter(msg => msg.id !== messageId);
-            
-            if (room.messages.length < initialLength) {
-                // If message was successfully deleted, notify all clients
-                io.to(roomId).emit('messageDeleted', { messageId });
-                console.log(`Message ${messageId} deleted in room ${roomId} by moderator.`);
-            }
-        } else {
-            // If someone tries to delete without permission
-            socket.emit('systemMessage', 'Error: You do not have permission to delete messages.');
+    // --- SECURITY CHECK (check against the token) ---
+    if (room && room.creatorToken === creatorToken && creatorToken) { 
+        // Logic to delete the message (unchanged)
+        const initialLength = room.messages.length;
+        room.messages = room.messages.filter(msg => msg.id !== messageId);
+        
+        if (room.messages.length < initialLength) {
+            io.to(roomId).emit('messageDeleted', { messageId });
         }
-    });
+    } else {
+        // ... rest of the unauthorized message ...
+    }
+});
 
     // --- 4. Handle Disconnect ---
     socket.on('disconnect', () => {
