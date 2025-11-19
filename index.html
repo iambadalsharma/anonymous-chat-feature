@@ -181,15 +181,18 @@ function joinChat() {
             header.appendChild(senderSpan);
 
             // Only the moderator sees the delete button
-            if (isCreatorMessage) {
-                const deleteBtn = document.createElement('span');
-                deleteBtn.classList.add('delete-btn');
-                deleteBtn.textContent = '❌ Delete';
-                deleteBtn.onclick = () => {
-                    if (confirm('Are you sure you want to delete this message?')) {
-                        socket.emit('deleteMessage', {
-                            roomId: currentRoomId,
-                            messageId: msg.id
+            if (isCreatorMessage || isOwnMessage) {
+        const deleteBtn = document.createElement('span');
+        deleteBtn.classList.add('delete-btn');
+        deleteBtn.textContent = '❌ Delete';
+        deleteBtn.onclick = () => {
+            if (confirm('Are you sure you want to delete this message?')) {
+                // Send the moderator token AND the sender ID for the check
+                socket.emit('deleteMessage', {
+                    roomId: currentRoomId,
+                    messageId: msg.id,
+                    creatorToken: localStorage.getItem(`chat_token_${currentRoomId}`) || '', // Send token
+                    requestSenderId: anonymousUser // Send current user's ID
                         });
                     }
                 };
@@ -198,7 +201,13 @@ function joinChat() {
             }
             
             li.appendChild(header);
-
+// Add classes for styling (to show delete button and color bubble)
+        if (isCreatorMessage) {
+             li.classList.add('creator-message'); 
+        } else if (isOwnMessage) {
+             li.classList.add('self-delete-message'); // New class for self-delete
+             li.classList.add('own-message'); // New class for self-styling (green bubble)
+        }
             // Content
             const content = document.createElement('div');
             content.classList.add('message-content');
