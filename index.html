@@ -81,142 +81,156 @@
 
     <script src="/socket.io/socket.io.js"></script>
 
-    <script>
-        let socket;
-        let currentRoomId;
-        let isModerator = false;
-        let anonymousUser;
+<script>
+    let socket;
+    let currentRoomId;
+    let isModerator = false;
+    let anonymousUser;
 
-        const messages = document.getElementById('messages');
-        const form = document.getElementById('form');
-        const input = document.getElementById('input');
-        const chatContainer = document.getElementById('chat-container');
-        const roomInfo = document.getElementById('room-info');
-        const roomInput = document.getElementById('room-input');
+    const messages = document.getElementById('messages');
+    const form = document.getElementById('form');
+    const input = document.getElementById('input');
+    const chatContainer = document.getElementById('chat-container');
+    const roomInfo = document.getElementById('room-info');
+    const roomInput = document.getElementById('room-input');
 
-// --- Updated joinChat function in index.html ---
-function joinChat() {
-    currentRoomId = roomInput.value.trim();
-    if (!currentRoomId) return alert('Please enter a Room ID');
-
-    // 1. Check for existing creator token in localStorage
-    let storedToken = localStorage.getItem(`chat_token_${currentRoomId}`) || '';
-
-    socket = io('https://www.cloudinfomac.com'); // Your live URL
-
-    socket.on('connect', () => {
-        // 2. Send the token (or empty string if not found)
-        socket.emit('joinRoom', { roomId: currentRoomId, creatorToken: storedToken });
+    // --- NEW: Automatically Join Room on Page Load ---
+    document.addEventListener('DOMContentLoaded', () => {
+        // Use the value from the input field to automatically join the room
+        // The default value is set to "default-room" in your HTML
+        joinChat();
     });
 
-    // --- Handler: Room Joined Confirmation ---
-    socket.on('roomJoined', (data) => {
-        isModerator = data.isCreator;
-        anonymousUser = data.anonymousId;
-        
-        // 3. If a new token was assigned (i.e., this is the creator), store it.
-        if (data.creatorToken) {
-            localStorage.setItem(`chat_token_${currentRoomId}`, data.creatorToken);
-        }
-                
-                roomInfo.textContent = `Room: ${data.roomId} | User: ${data.anonymousId}`;
-                chatContainer.style.display = 'block';
-                document.getElementById('join-form').style.display = 'none';
+    function joinChat() {
+        currentRoomId = roomInput.value.trim();
+        // If the user hasn't typed anything and the default value is gone, alert.
+        if (!currentRoomId) return alert('Please enter a Room ID');
 
-                // Load history
-                data.history.forEach(msg => displayMessage(msg));
-            });
+        // 1. Check for existing creator token in localStorage
+        let storedToken = localStorage.getItem(`chat_token_${currentRoomId}`) || '';
+
+        // IMPORTANT: Ensure this URL is correct. It looks right for your custom domain.
+        socket = io('https://www.cloudinfomac.com'); 
+
+        socket.on('connect', () => {
+            // 2. Send the token (or empty string if not found)
+            socket.emit('joinRoom', { roomId: currentRoomId, creatorToken: storedToken });
+        });
+
+        // --- Handler: Room Joined Confirmation ---
+        socket.on('roomJoined', (data) => {
+            isModerator = data.isCreator;
+            anonymousUser = data.anonymousId;
             
-            // --- Handler: New Incoming Message ---
-            socket.on('message', (msg) => {
-                displayMessage(msg);
-            });
-
-            // --- Handler: Message Deleted by Moderator ---
-            socket.on('messageDeleted', (data) => {
-                const li = document.getElementById(`msg-${data.messageId}`);
-                if (li) {
-                    li.innerHTML = '<span class="system-message">--- Message Deleted by Moderator ---</span>';
-                    li.classList.remove('creator-message'); // Remove moderator styling
-                }
-            });
-
-            // --- Handler: System Messages (e.g., user joined, errors) ---
-            socket.on('systemMessage', (message) => {
-                const li = document.createElement('li');
-                li.classList.add('system-message');
-                li.textContent = message;
-                messages.appendChild(li);
-                messages.scrollTop = messages.scrollHeight;
-            });
-
-            // --- Handle Form Submission (Sending Message) ---
-            form.onsubmit = (e) => {
-                e.preventDefault();
-                if (input.value) {
-                    socket.emit('chatMessage', {
-                        roomId: currentRoomId,
-                        anonymousId: anonymousUser,
-                        message: input.value
-                    });
-                    input.value = '';
-                }
-            };
-        }
-
-        // Function to create the message element and append to the list
-        function displayMessage(msg) {
-            const li = document.createElement('li');
-            li.id = `msg-${msg.id}`; // Add unique ID for deletion targeting
-
-            const isOwnMessage = msg.sender === anonymousUser;
-            const isCreatorMessage = isModerator;
-
-            // Header (Sender, Time, and Delete Button)
-            const header = document.createElement('div');
-            header.classList.add('message-header');
-            
-            const senderSpan = document.createElement('span');
-            senderSpan.innerHTML = `<strong>${msg.sender}</strong> <small>(${msg.timestamp})</small>`;
-            header.appendChild(senderSpan);
-
-            // Only the moderator sees the delete button
-            if (isCreatorMessage || isOwnMessage) {
-        const deleteBtn = document.createElement('span');
-        deleteBtn.classList.add('delete-btn');
-        deleteBtn.textContent = '❌ Delete';
-        deleteBtn.onclick = () => {
-            if (confirm('Are you sure you want to delete this message?')) {
-                // Send the moderator token AND the sender ID for the check
-                socket.emit('deleteMessage', {
-                    roomId: currentRoomId,
-                    messageId: msg.id,
-                    creatorToken: localStorage.getItem(`chat_token_${currentRoomId}`) || '', // Send token
-                    requestSenderId: anonymousUser // Send current user's ID
-                        });
-                    }
-                };
-                header.appendChild(deleteBtn);
-                li.classList.add('creator-message'); // Add class to show delete button
+            // 3. If a new token was assigned (i.e., this is the creator), store it.
+            if (data.creatorToken) {
+                localStorage.setItem(`chat_token_${currentRoomId}`, data.creatorToken);
             }
             
-            li.appendChild(header);
-// Add classes for styling (to show delete button and color bubble)
-        if (isCreatorMessage) {
-             li.classList.add('creator-message'); 
-        } else if (isOwnMessage) {
-             li.classList.add('self-delete-message'); // New class for self-delete
-             li.classList.add('own-message'); // New class for self-styling (green bubble)
-        }
-            // Content
-            const content = document.createElement('div');
-            content.classList.add('message-content');
-            content.textContent = msg.text;
-            li.appendChild(content);
+            // Show the chat interface
+            roomInfo.textContent = `Room: ${data.roomId} | User: ${data.anonymousId}`;
+            chatContainer.style.display = 'block';
+            document.getElementById('join-form').style.display = 'none';
 
+            // Load history
+            messages.innerHTML = ''; // Clear the list before loading history
+            data.history.forEach(msg => displayMessage(msg));
+        });
+        
+        // --- Handler: New Incoming Message ---
+        socket.on('message', (msg) => {
+            displayMessage(msg);
+        });
+
+        // --- Handler: Message Deleted ---
+        socket.on('messageDeleted', (data) => {
+            const li = document.getElementById(`msg-${data.messageId}`);
+            if (li) {
+                li.innerHTML = '<span class="system-message">--- Message Deleted ---</span>';
+                li.classList.remove('creator-message', 'self-delete-message', 'own-message'); 
+            }
+        });
+
+        // --- Handler: System Messages ---
+        socket.on('systemMessage', (message) => {
+            const li = document.createElement('li');
+            li.classList.add('system-message');
+            li.textContent = message;
             messages.appendChild(li);
-            messages.scrollTop = messages.scrollHeight; // Scroll to bottom
+            messages.scrollTop = messages.scrollHeight;
+        });
+
+        // --- Handle Form Submission (Sending Message) ---
+        form.onsubmit = (e) => {
+            e.preventDefault();
+            if (input.value) {
+                socket.emit('chatMessage', {
+                    roomId: currentRoomId,
+                    anonymousId: anonymousUser,
+                    message: input.value
+                });
+                input.value = '';
+            }
+        };
+    }
+
+    // Function to create the message element and append to the list
+    function displayMessage(msg) {
+        const li = document.createElement('li');
+        li.id = `msg-${msg.id}`; // Add unique ID for deletion targeting
+
+        const isOwnMessage = msg.sender === anonymousUser;
+        const isCreatorMessage = isModerator; // This checks the current user's role
+
+        // Header (Sender, Time, and Delete Button)
+        const header = document.createElement('div');
+        header.classList.add('message-header');
+        
+        const senderSpan = document.createElement('span');
+        senderSpan.innerHTML = `<strong>${msg.sender}</strong> <small>(${msg.timestamp})</small>`;
+        header.appendChild(senderSpan);
+
+        // Only the moderator OR the sender sees the delete button
+        if (isCreatorMessage || isOwnMessage) {
+            const deleteBtn = document.createElement('span');
+            deleteBtn.classList.add('delete-btn');
+            deleteBtn.textContent = '❌ Delete';
+            deleteBtn.onclick = () => {
+                if (confirm('Are you sure you want to delete this message?')) {
+                    // Send the moderator token AND the sender ID for the check
+                    socket.emit('deleteMessage', {
+                        roomId: currentRoomId,
+                        messageId: msg.id,
+                        creatorToken: localStorage.getItem(`chat_token_${currentRoomId}`) || '', // Send token
+                        requestSenderId: anonymousUser // Send current user's ID
+                    });
+                }
+            };
+            header.appendChild(deleteBtn);
         }
-    </script>
+        
+        li.appendChild(header);
+
+        // --- STYLING LOGIC FIX: Removed redundant class setting ---
+        if (isCreatorMessage) {
+             // Moderator styling is mostly about seeing all delete buttons
+             li.classList.add('creator-message'); 
+        } 
+        if (isOwnMessage) {
+             // Styling for self-sent messages
+             li.classList.add('self-delete-message'); 
+             li.classList.add('own-message'); 
+        }
+
+        // Content
+        const content = document.createElement('div');
+        content.classList.add('message-content');
+        content.textContent = msg.text;
+        li.appendChild(content);
+
+        messages.appendChild(li);
+        messages.scrollTop = messages.scrollHeight; // Scroll to bottom
+    }
+</script>
 </body>
 </html>
