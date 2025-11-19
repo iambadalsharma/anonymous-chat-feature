@@ -7,7 +7,7 @@
     <style>
         :root {
             --primary: #6366f1;
-            --bg: #f3f4f6;
+            --bg: #f3ff6f4;
             --chat-bg: #ffffff;
             --mine-bg: #6366f1;
             --mine-text: #ffffff;
@@ -33,7 +33,7 @@
             justify-content: center;
             width: 100%;
             height: 100%;
-            position: fixed; /* Use fixed/absolute to overlay */
+            position: fixed; 
             top: 0;
             left: 0;
             z-index: 10;
@@ -83,7 +83,7 @@
 
         /* --- CHAT SCREEN --- */
         #chat-screen {
-            display: none; /* Hidden by default */
+            display: none; 
             flex-direction: column;
             width: 100%;
             max-width: 800px;
@@ -257,8 +257,10 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         // --- CONFIGURATION ---
-        // FIX: Using WSS (WebSocket Secure) protocol for production HTTPS environment.
-        const SERVER_URL = 'wss://www.cloudinfomac.com'; 
+        // FIX: Reverting to dynamic protocol/host which was working previously.
+        // It relies on the client's current location, which is your custom domain.
+        // If this fails, explicitly use 'https://www.cloudinfomac.com' 
+        const SERVER_URL = window.location.origin; 
 
         let socket;
         let myAdminCode = null;
@@ -286,15 +288,30 @@
             const adminCode = document.getElementById('admin-code').value.trim();
 
             if (!roomId) return alert("Please enter a Room ID");
+            
+            // Disconnect old socket if it exists 
+            if (socket && socket.connected) {
+                socket.disconnect();
+            }
 
             myRoomId = roomId;
-            // Note: myAdminCode will be verified/set in the roomJoined handler
 
-            // Connect
-            socket = io(SERVER_URL);
+            // FIX: Connect using the working protocol/URL
+            socket = io(SERVER_URL, {
+                // Allows a short window for Render to wake up
+                timeout: 5000 
+            });
 
             socket.on('connect', () => {
-                socket.emit('joinRoom', { roomId, username, adminCode });
+                // Use Local Storage to attempt to retrieve the creator code for this room
+                const storedAdminCode = localStorage.getItem(`admin_code_${roomId}`) || adminCode;
+
+                socket.emit('joinRoom', { 
+                    roomId, 
+                    username, 
+                    // Send stored code first, fall back to what user typed 
+                    adminCode: storedAdminCode 
+                });
             });
 
             // --- Handlers ---
@@ -305,9 +322,14 @@
                 document.getElementById('room-display').textContent = `Room: ${data.roomId}`;
                 
                 let userLabel = data.username;
+                
                 if (data.isCreator) {
                     userLabel += " (Creator Mode)";
-                    myAdminCode = data.adminCode; // Set the verified code from server
+                    myAdminCode = data.adminCode;
+                    // Store the verified, correct admin code for future visits/refreshes
+                    localStorage.setItem(`admin_code_${data.roomId}`, data.adminCode);
+                } else {
+                    myAdminCode = null;
                 }
                 document.getElementById('user-display').textContent = userLabel;
 
@@ -325,10 +347,15 @@
                 scrollToBottom();
             });
             
-            // --- Connection Error Handling (Crucial for debugging) ---
+            // --- Connection Error Handling ---
             socket.on('connect_error', (err) => {
                 console.error("Connection Error:", err);
-                alert(`Connection Failed. Check Server URL and Status. Details: ${err.message}`);
+                alert("Connection Failed. The server may be offline or sleeping (Render Free Tier). Please wait 30 seconds and try again.");
+                
+                // Keep the user on the login screen if connection failed
+                loginScreen.style.opacity = '1';
+                loginScreen.style.display = 'flex';
+                chatScreen.style.display = 'none';
             });
             
             socket.on('message', (msg) => {
@@ -391,6 +418,7 @@
             meta.appendChild(time);
 
             // DELETE LOGIC (If Admin OR Sender)
+            // Use myAdminCode which is now retrieved/verified from the server
             if (myAdminCode || isMine) {
                 const delBtn = document.createElement('span');
                 delBtn.className = 'delete-icon';
@@ -408,7 +436,6 @@
         }
 
         function deleteMsg(id) {
-            // Use custom modal instead of built-in alert/confirm
             const result = window.confirm("Are you sure you want to delete this message?");
             if (!result) return;
             
