@@ -5,66 +5,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anonymous Moderated Chat</title>
     <style>
-        /* Simple CSS for the chat interface */
+        /* General Styles */
         body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f4f4f4; }
-        #chat-container {
-    max-width: 600px;
-    margin: 20px auto; /* Add margin for spacing */
-    background: #fff;
-    border-radius: 12px; /* Smoother corners */
-    box-shadow: 0 10px 20px rgba(0,0,0,0.15); /* Stronger shadow */
-    overflow: hidden; /* Contains children */
-    padding: 0;
-}
-        #messages {
-    list-style-type: none;
-    padding: 15px;
-    margin: 0;
-    height: 400px; /* Increased height */
-    overflow-y: auto;
-    background-color: #f7f9fc; /* Light background for messages area */
-}
+        h1 { margin-bottom: 20px; }
 
-#messages li {
-    padding: 10px;
-    margin-bottom: 8px;
-    border-radius: 8px;
-    background-color: #ffffff;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-}
+        /* Chat Container and Styling */
+        #chat-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            overflow: hidden;
+            padding: 0;
+        }
+
+        /* Message List */
+        #messages {
+            list-style-type: none;
+            padding: 15px;
+            margin: 0;
+            height: 400px; 
+            overflow-y: auto;
+            background-color: #f7f9fc;
+        }
+        #messages li {
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            background-color: #ffffff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        /* Own Message Styling (Green Bubble) */
         .own-message {
-    text-align: right;
-    background-color: #dcf8c6; /* Green bubble for self */
-}
+            text-align: right;
+            background-color: #dcf8c6; 
+        }
+
+        /* Message Structure */
         .message-header { font-size: 0.8em; color: #777; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
         .message-content { font-size: 1em; color: #333; word-wrap: break-word; }
+        
+        /* Delete Button */
         .delete-btn {
-    color: #cc0000;
-    cursor: pointer;
-    font-size: 0.8em;
-    margin-left: 10px;
-    visibility: hidden; 
-}
+            color: #cc0000;
+            cursor: pointer;
+            font-size: 0.8em;
+            margin-left: 10px;
+            visibility: hidden; 
+        }
         .creator-message .delete-btn,
-.self-delete-message .delete-btn { 
-    visibility: visible; 
-}
+        .self-delete-message .delete-btn { 
+            visibility: visible; 
+        }
+
+        /* Input Form */
         #form {
-    display: flex;
-    padding: 10px;
-    background-color: #ffffff;
-    border-top: 1px solid #eee;
-}
+            display: flex;
+            padding: 10px;
+            background-color: #ffffff;
+            border-top: 1px solid #eee;
+        }
         #input { flex-grow: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px 0 0 4px; outline: none; }
-        #form button {
-    background: #007bff; /* Primary blue button */
-}
+        #form button { 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            padding: 10px 15px; 
+            border-radius: 0 4px 4px 0; 
+            cursor: pointer;
+        }
+        
+        /* Join Form */
         #join-form { display: flex; gap: 10px; margin-bottom: 20px; }
         .system-message { color: orange; font-style: italic; font-size: 0.9em; }
     </style>
 </head>
 <body>
     <h1>Anonymous Moderated Chat</h1>
+    
     <div id="join-form">
         <input id="room-input" type="text" placeholder="Enter Room ID" value="default-room" required>
         <button onclick="joinChat()">Join/Create Room</button>
@@ -81,156 +101,156 @@
 
     <script src="/socket.io/socket.io.js"></script>
 
-<script>
-    let socket;
-    let currentRoomId;
-    let isModerator = false;
-    let anonymousUser;
+    <script>
+        let socket;
+        let currentRoomId;
+        let isModerator = false;
+        let anonymousUser;
 
-    const messages = document.getElementById('messages');
-    const form = document.getElementById('form');
-    const input = document.getElementById('input');
-    const chatContainer = document.getElementById('chat-container');
-    const roomInfo = document.getElementById('room-info');
-    const roomInput = document.getElementById('room-input');
+        const messages = document.getElementById('messages');
+        const form = document.getElementById('form');
+        const input = document.getElementById('input');
+        const chatContainer = document.getElementById('chat-container');
+        const roomInfo = document.getElementById('room-info');
+        const roomInput = document.getElementById('room-input');
 
-    // --- NEW: Automatically Join Room on Page Load ---
-    document.addEventListener('DOMContentLoaded', () => {
-        // Use the value from the input field to automatically join the room
-        // The default value is set to "default-room" in your HTML
-        joinChat();
-    });
-
-    function joinChat() {
-        currentRoomId = roomInput.value.trim();
-        // If the user hasn't typed anything and the default value is gone, alert.
-        if (!currentRoomId) return alert('Please enter a Room ID');
-
-        // 1. Check for existing creator token in localStorage
-        let storedToken = localStorage.getItem(`chat_token_${currentRoomId}`) || '';
-
-        // IMPORTANT: Ensure this URL is correct. It looks right for your custom domain.
-        socket = io('https://www.cloudinfomac.com'); 
-
-        socket.on('connect', () => {
-            // 2. Send the token (or empty string if not found)
-            socket.emit('joinRoom', { roomId: currentRoomId, creatorToken: storedToken });
+        // --- FIX: Automatically Join Room on Page Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Automatically trigger the join logic with the default room ID on load.
+            joinChat();
         });
 
-        // --- Handler: Room Joined Confirmation ---
-        socket.on('roomJoined', (data) => {
-            isModerator = data.isCreator;
-            anonymousUser = data.anonymousId;
+        function joinChat() {
+            // FIX: Use the input value, falling back to a default if the element/value is somehow missing
+            currentRoomId = (roomInput && roomInput.value.trim()) ? roomInput.value.trim() : 'default-room';
+
+            if (!currentRoomId) return alert('Please enter a Room ID');
+
+            // 1. Check for existing creator token in localStorage
+            let storedToken = localStorage.getItem(`chat_token_${currentRoomId}`) || '';
+
+            // IMPORTANT: Set your live Render URL here!
+            socket = io('https://www.cloudinfomac.com'); 
+
+            socket.on('connect', () => {
+                // 2. Send the token (or empty string if not found)
+                socket.emit('joinRoom', { roomId: currentRoomId, creatorToken: storedToken });
+            });
+
+            // --- Handler: Room Joined Confirmation ---
+            socket.on('roomJoined', (data) => {
+                isModerator = data.isCreator;
+                anonymousUser = data.anonymousId;
+                
+                // 3. If a new token was assigned (i.e., this is the creator), store it.
+                if (data.creatorToken) {
+                    localStorage.setItem(`chat_token_${currentRoomId}`, data.creatorToken);
+                }
+                
+                // Show the chat interface and hide the join form
+                roomInfo.textContent = `Room: ${data.roomId} | User: ${data.anonymousId}`;
+                chatContainer.style.display = 'block';
+                
+                const joinForm = document.getElementById('join-form');
+                if(joinForm) joinForm.style.display = 'none';
+
+                // Load history
+                messages.innerHTML = ''; // Clear the list before loading history
+                data.history.forEach(msg => displayMessage(msg));
+            });
             
-            // 3. If a new token was assigned (i.e., this is the creator), store it.
-            if (data.creatorToken) {
-                localStorage.setItem(`chat_token_${currentRoomId}`, data.creatorToken);
-            }
-            
-            // Show the chat interface
-            roomInfo.textContent = `Room: ${data.roomId} | User: ${data.anonymousId}`;
-            chatContainer.style.display = 'block';
-            document.getElementById('join-form').style.display = 'none';
+            // --- Handler: New Incoming Message ---
+            socket.on('message', (msg) => {
+                displayMessage(msg);
+            });
 
-            // Load history
-            messages.innerHTML = ''; // Clear the list before loading history
-            data.history.forEach(msg => displayMessage(msg));
-        });
-        
-        // --- Handler: New Incoming Message ---
-        socket.on('message', (msg) => {
-            displayMessage(msg);
-        });
+            // --- Handler: Message Deleted ---
+            socket.on('messageDeleted', (data) => {
+                const li = document.getElementById(`msg-${data.messageId}`);
+                if (li) {
+                    li.innerHTML = '<span class="system-message">--- Message Deleted ---</span>';
+                    // Remove all styling to ensure it displays as a system message
+                    li.classList.remove('creator-message', 'self-delete-message', 'own-message'); 
+                }
+            });
 
-        // --- Handler: Message Deleted ---
-        socket.on('messageDeleted', (data) => {
-            const li = document.getElementById(`msg-${data.messageId}`);
-            if (li) {
-                li.innerHTML = '<span class="system-message">--- Message Deleted ---</span>';
-                li.classList.remove('creator-message', 'self-delete-message', 'own-message'); 
-            }
-        });
+            // --- Handler: System Messages ---
+            socket.on('systemMessage', (message) => {
+                const li = document.createElement('li');
+                li.classList.add('system-message');
+                li.textContent = message;
+                messages.appendChild(li);
+                messages.scrollTop = messages.scrollHeight;
+            });
 
-        // --- Handler: System Messages ---
-        socket.on('systemMessage', (message) => {
-            const li = document.createElement('li');
-            li.classList.add('system-message');
-            li.textContent = message;
-            messages.appendChild(li);
-            messages.scrollTop = messages.scrollHeight;
-        });
-
-        // --- Handle Form Submission (Sending Message) ---
-        form.onsubmit = (e) => {
-            e.preventDefault();
-            if (input.value) {
-                socket.emit('chatMessage', {
-                    roomId: currentRoomId,
-                    anonymousId: anonymousUser,
-                    message: input.value
-                });
-                input.value = '';
-            }
-        };
-    }
-
-    // Function to create the message element and append to the list
-    function displayMessage(msg) {
-        const li = document.createElement('li');
-        li.id = `msg-${msg.id}`; // Add unique ID for deletion targeting
-
-        const isOwnMessage = msg.sender === anonymousUser;
-        const isCreatorMessage = isModerator; // This checks the current user's role
-
-        // Header (Sender, Time, and Delete Button)
-        const header = document.createElement('div');
-        header.classList.add('message-header');
-        
-        const senderSpan = document.createElement('span');
-        senderSpan.innerHTML = `<strong>${msg.sender}</strong> <small>(${msg.timestamp})</small>`;
-        header.appendChild(senderSpan);
-
-        // Only the moderator OR the sender sees the delete button
-        if (isCreatorMessage || isOwnMessage) {
-            const deleteBtn = document.createElement('span');
-            deleteBtn.classList.add('delete-btn');
-            deleteBtn.textContent = '❌ Delete';
-            deleteBtn.onclick = () => {
-                if (confirm('Are you sure you want to delete this message?')) {
-                    // Send the moderator token AND the sender ID for the check
-                    socket.emit('deleteMessage', {
+            // --- Handle Form Submission (Sending Message) ---
+            form.onsubmit = (e) => {
+                e.preventDefault();
+                if (input.value) {
+                    socket.emit('chatMessage', {
                         roomId: currentRoomId,
-                        messageId: msg.id,
-                        creatorToken: localStorage.getItem(`chat_token_${currentRoomId}`) || '', // Send token
-                        requestSenderId: anonymousUser // Send current user's ID
+                        anonymousId: anonymousUser,
+                        message: input.value
                     });
+                    input.value = '';
                 }
             };
-            header.appendChild(deleteBtn);
-        }
-        
-        li.appendChild(header);
-
-        // --- STYLING LOGIC FIX: Removed redundant class setting ---
-        if (isCreatorMessage) {
-             // Moderator styling is mostly about seeing all delete buttons
-             li.classList.add('creator-message'); 
-        } 
-        if (isOwnMessage) {
-             // Styling for self-sent messages
-             li.classList.add('self-delete-message'); 
-             li.classList.add('own-message'); 
         }
 
-        // Content
-        const content = document.createElement('div');
-        content.classList.add('message-content');
-        content.textContent = msg.text;
-        li.appendChild(content);
+        // Function to create the message element and append to the list
+        function displayMessage(msg) {
+            const li = document.createElement('li');
+            li.id = `msg-${msg.id}`; 
 
-        messages.appendChild(li);
-        messages.scrollTop = messages.scrollHeight; // Scroll to bottom
-    }
-</script>
+            const isOwnMessage = msg.sender === anonymousUser;
+            const isCreatorMessage = isModerator; 
+
+            // Header (Sender, Time, and Delete Button)
+            const header = document.createElement('div');
+            header.classList.add('message-header');
+            
+            const senderSpan = document.createElement('span');
+            senderSpan.innerHTML = `<strong>${msg.sender}</strong> <small>(${msg.timestamp})</small>`;
+            header.appendChild(senderSpan);
+
+            // Conditional Delete Button (Moderator OR Sender)
+            if (isCreatorMessage || isOwnMessage) {
+                const deleteBtn = document.createElement('span');
+                deleteBtn.classList.add('delete-btn');
+                deleteBtn.textContent = '❌ Delete';
+                deleteBtn.onclick = () => {
+                    if (confirm('Are you sure you want to delete this message?')) {
+                        socket.emit('deleteMessage', {
+                            roomId: currentRoomId,
+                            messageId: msg.id,
+                            creatorToken: localStorage.getItem(`chat_token_${currentRoomId}`) || '', 
+                            requestSenderId: anonymousUser 
+                        });
+                    }
+                };
+                header.appendChild(deleteBtn);
+            }
+            
+            li.appendChild(header);
+
+            // Apply styling classes
+            if (isCreatorMessage) {
+                 li.classList.add('creator-message'); 
+            } 
+            if (isOwnMessage) {
+                 li.classList.add('self-delete-message'); 
+                 li.classList.add('own-message'); 
+            }
+
+            // Content
+            const content = document.createElement('div');
+            content.classList.add('message-content');
+            content.textContent = msg.text;
+            li.appendChild(content);
+
+            messages.appendChild(li);
+            messages.scrollTop = messages.scrollHeight; 
+        }
+    </script>
 </body>
 </html>
