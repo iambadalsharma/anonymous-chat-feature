@@ -94,23 +94,30 @@
         const roomInfo = document.getElementById('room-info');
         const roomInput = document.getElementById('room-input');
 
-        function joinChat() {
-            currentRoomId = roomInput.value.trim();
-            if (!currentRoomId) return alert('Please enter a Room ID');
+// --- Updated joinChat function in index.html ---
+function joinChat() {
+    currentRoomId = roomInput.value.trim();
+    if (!currentRoomId) return alert('Please enter a Room ID');
 
-            // Connect to the server
-            // The default URL is the server serving this page (http://localhost:3000)
-            socket = io('https://www.cloudinfomac.com');
+    // 1. Check for existing creator token in localStorage
+    let storedToken = localStorage.getItem(`chat_token_${currentRoomId}`) || '';
 
-            socket.on('connect', () => {
-                // Send join request to the server
-                socket.emit('joinRoom', currentRoomId);
-            });
+    socket = io('https://www.cloudinfomac.com'); // Your live URL
 
-            // --- Handler: Room Joined Confirmation ---
-            socket.on('roomJoined', (data) => {
-                isModerator = data.isCreator;
-                anonymousUser = data.anonymousId;
+    socket.on('connect', () => {
+        // 2. Send the token (or empty string if not found)
+        socket.emit('joinRoom', { roomId: currentRoomId, creatorToken: storedToken });
+    });
+
+    // --- Handler: Room Joined Confirmation ---
+    socket.on('roomJoined', (data) => {
+        isModerator = data.isCreator;
+        anonymousUser = data.anonymousId;
+        
+        // 3. If a new token was assigned (i.e., this is the creator), store it.
+        if (data.creatorToken) {
+            localStorage.setItem(`chat_token_${currentRoomId}`, data.creatorToken);
+        }
                 
                 roomInfo.textContent = `Room: ${data.roomId} | User: ${data.anonymousId}`;
                 chatContainer.style.display = 'block';
