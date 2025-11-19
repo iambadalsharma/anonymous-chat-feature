@@ -68,11 +68,11 @@ socket.on('joinRoom', ({ roomId, creatorToken }) => {
         
         // Create the message object
         const newMessage = {
-            id: messageId,
-            sender: anonymousId,
-            text: message,
-            timestamp: new Date().toLocaleTimeString()
-        };
+    id: messageId,
+    sender: anonymousId, // <-- THIS IS KEY
+    text: message,
+    timestamp: new Date().toLocaleTimeString()
+};
 
         // Save to in-memory state
         if (rooms[roomId]) {
