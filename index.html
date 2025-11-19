@@ -218,17 +218,17 @@
             
             <div class="input-group">
                 <label>Room ID</label>
-                <input type="text" id="room-id" placeholder="e.g. lounge-1" required>
+                <input type="text" id="room-id" placeholder="e.g. lounge-1" required onkeypress="handleEnterKey(event)">
             </div>
             
             <div class="input-group">
                 <label>Your Name (Optional)</label>
-                <input type="text" id="username" placeholder="e.g. Ninja">
+                <input type="text" id="username" placeholder="e.g. Ninja" onkeypress="handleEnterKey(event)">
             </div>
 
             <div class="input-group">
                 <label>Secret Code (For Admins)</label>
-                <input type="password" id="admin-code" placeholder="Leave empty if guest">
+                <input type="password" id="admin-code" placeholder="Leave empty if guest" onkeypress="handleEnterKey(event)">
             </div>
 
             <button class="btn" onclick="joinChat()">Enter Room</button>
@@ -255,8 +255,7 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         // --- CONFIGURATION ---
-        // Replace with your Render URL if hosting remotely, or use window.location.origin for auto-detect
-        const SERVER_URL = '[https://www.cloudinfomac.com](https://www.cloudinfomac.com)'; 
+        const SERVER_URL = 'https://www.cloudinfomac.com'; 
 
         let socket;
         let myAdminCode = null;
@@ -270,6 +269,15 @@
         const chatForm = document.getElementById('chat-form');
         const msgInput = document.getElementById('msg-input');
 
+        // --- NEW FUNCTION: Handle Enter Key on Login Form ---
+        function handleEnterKey(event) {
+            // Check if the key pressed is the Enter key (key code 13 or key 'Enter')
+            if (event.key === 'Enter' || event.keyCode === 13) {
+                event.preventDefault(); // Stop the form from submitting normally
+                joinChat(); // Call the function to join the room
+            }
+        }
+        
         function joinChat() {
             const roomId = document.getElementById('room-id').value.trim();
             const username = document.getElementById('username').value.trim();
@@ -310,6 +318,8 @@
                 setTimeout(() => {
                     loginScreen.style.display = 'none';
                     chatScreen.style.display = 'flex';
+                    // Focus input after joining
+                    msgInput.focus();
                 }, 300);
 
                 // Load History
@@ -337,21 +347,26 @@
             });
         }
 
+        // The chat form handling is correct, using onsubmit prevents default
+        // browser form behavior and sends the message.
         chatForm.onsubmit = (e) => {
             e.preventDefault();
             const text = msgInput.value.trim();
             if (!text) return;
 
+            // Ensure the user name sent is always the one they input on the login screen
+            const currentUsername = document.getElementById('username').value.trim() || 'Guest';
+
             socket.emit('chatMessage', {
                 roomId: myRoomId,
-                username: document.getElementById('username').value.trim() || 'Guest',
+                username: currentUsername,
                 message: text
             });
             msgInput.value = '';
         };
 
         function renderMessage(msg) {
-            const isMine = msg.senderId === myUserId; // Check if I sent it (based on socket ID session)
+            const isMine = msg.senderId === myUserId; 
             
             // Create Containers
             const row = document.createElement('div');
@@ -376,7 +391,6 @@
             meta.appendChild(time);
 
             // DELETE LOGIC
-            // Show delete if: I have an Admin Code OR I am the sender
             if (myAdminCode || isMine) {
                 const delBtn = document.createElement('span');
                 delBtn.className = 'delete-icon';
@@ -388,7 +402,7 @@
             // Assemble
             if (!isMine) row.appendChild(sender);
             row.appendChild(bubble);
-            bubble.appendChild(meta); // Put time/delete inside bubble for cleaner look (optional)
+            bubble.appendChild(meta);
             
             msgsArea.appendChild(row);
         }
