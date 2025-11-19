@@ -84,22 +84,28 @@ socket.on('joinRoom', ({ roomId, creatorToken }) => {
     });
 
     // --- 3. Handle Message Deletion (Moderator Action) ---
-// --- Update deleteMessage handler in server.js to check creatorToken ---
+// --- Combined Self-Delete and Moderator-Delete in server.js ---
 socket.on('deleteMessage', (data) => {
-    const { roomId, messageId, creatorToken } = data; // Receive token
+    const { roomId, messageId, creatorToken, requestSenderId } = data; // New: requestSenderId
     const room = rooms[roomId];
 
-    // --- SECURITY CHECK (check against the token) ---
-    if (room && room.creatorToken === creatorToken && creatorToken) { 
-        // Logic to delete the message (unchanged)
-        const initialLength = room.messages.length;
-        room.messages = room.messages.filter(msg => msg.id !== messageId);
-        
-        if (room.messages.length < initialLength) {
-            io.to(roomId).emit('messageDeleted', { messageId });
-        }
+    if (!room) return;
+    
+    // 1. Find the message to be deleted
+    const messageIndex = room.messages.findIndex(msg => msg.id === messageId);
+    if (messageIndex === -1) return;
+    const message = room.messages[messageIndex];
+
+    // 2. Check if the user is the MODERATOR OR the original SENDER
+    const isModerator = room.creatorToken === creatorToken && creatorToken;
+    const isSender = message.sender === requestSenderId;
+    
+    if (isModerator || isSender) {
+        // Delete the message
+        room.messages.splice(messageIndex, 1);
+        io.to(roomId).emit('messageDeleted', { messageId });
     } else {
-        // ... rest of the unauthorized message ...
+        socket.emit('systemMessage', 'Error: You do not have permission to delete this message.');
     }
 });
 
