@@ -2,22 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- Viewport setting to prevent accidental zooming on mobile -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Cloud Infomac | Enterprise Digital Architecture</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
             --bg-body: #0a0a0a;
-            --bg-card: #171717;
             --primary: #3b82f6; 
-            --primary-dark: #2563eb;
-            --accent: #6366f1;
             --text-main: #ededed;
             --text-muted: #a1a1aa;
             --border: rgba(255, 255, 255, 0.1);
             --font-main: 'Inter', system-ui, -apple-system, sans-serif;
             --nav-height: 70px;
+            
+            /* CHAT THEME VARIABLES */
+            --term-bg: #050505;
+            --term-text: #e0e0e0;
+            --term-accent: #d946ef; /* Neon Purple */
+            --term-cyan: #06b6d4;   /* Neon Cyan */
+            --term-font: 'Courier New', Courier, monospace;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: var(--font-main); }
@@ -40,40 +43,21 @@
         }
         .logo { font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 8px; color: white; cursor: pointer; }
         .logo i { color: var(--primary); }
-        
-        /* Desktop Menu */
         .nav-links { display: flex; gap: 32px; align-items: center; }
-        .nav-item { 
-            text-decoration: none; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; 
-            transition: color 0.2s; cursor: pointer; 
-        }
+        .nav-item { text-decoration: none; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; transition: color 0.2s; cursor: pointer; }
         .nav-item:hover, .nav-item.active { color: white; }
-        
-        .cta-nav { 
-            padding: 8px 18px; border-radius: 6px; 
-            background: white; color: black; 
-            font-size: 0.85rem; font-weight: 600; cursor: pointer; border: none;
-        }
-
-        /* Mobile Menu Toggle */
+        .cta-nav { padding: 8px 18px; border-radius: 6px; background: white; color: black; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: none; }
         .mobile-toggle { display: none; font-size: 1.5rem; cursor: pointer; color: white; }
         
-        /* Mobile Drawer */
         .mobile-menu {
             position: fixed; top: var(--nav-height); left: 0; width: 100%;
-            background: var(--bg-card); border-bottom: 1px solid var(--border);
-            display: none; flex-direction: column; padding: 20px; gap: 20px;
-            z-index: 999;
+            background: #171717; border-bottom: 1px solid var(--border);
+            display: none; flex-direction: column; padding: 20px; gap: 20px; z-index: 999;
         }
         .mobile-menu.open { display: flex; }
 
         /* --- PAGE STRUCTURE --- */
-        .page {
-            display: none; 
-            padding-top: var(--nav-height);
-            animation: fadeIn 0.4s ease forwards;
-            min-height: 100vh;
-        }
+        .page { display: none; padding-top: var(--nav-height); animation: fadeIn 0.4s ease forwards; min-height: 100vh; }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -87,66 +71,33 @@
         #bg-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.3; }
         h1 {
             font-size: clamp(2.5rem, 5vw, 4.5rem); line-height: 1.1; font-weight: 700; margin-bottom: 20px;
-            background: linear-gradient(to bottom, #fff, #a1a1aa);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background: linear-gradient(to bottom, #fff, #a1a1aa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
         p.subtitle { 
             font-size: clamp(1rem, 2vw, 1.2rem); color: var(--text-muted); margin-bottom: 35px; 
             max-width: 580px; margin-left: auto; margin-right: auto; line-height: 1.6;
         }
         .hero-btns { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; }
-        .btn {
-            padding: 12px 28px; border-radius: 6px; font-weight: 600; font-size: 0.95rem; 
-            cursor: pointer; border: 1px solid transparent; transition: all 0.2s;
-        }
+        .btn { padding: 12px 28px; border-radius: 6px; font-weight: 600; font-size: 0.95rem; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-secondary { background: rgba(255,255,255,0.05); border-color: var(--border); color: white; }
 
-        /* --- GENERIC CONTENT LAYOUT --- */
+        /* --- SECTIONS --- */
         .content-container { max-width: 1200px; margin: 0 auto; padding: 60px 20px; }
         .page-header { margin-bottom: 50px; }
         .page-header h2 { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 10px; }
-        .page-header p { color: var(--text-muted); max-width: 600px; font-size: 1.1rem; }
-
         .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
-        
-        .feature-card {
-            background: var(--bg-card); padding: 30px; border-radius: 12px;
-            border: 1px solid var(--border); transition: border-color 0.3s;
-        }
+        .feature-card { background: #171717; padding: 30px; border-radius: 12px; border: 1px solid var(--border); }
         .feature-card:hover { border-color: var(--primary); }
-        .icon-box { 
-            width: 45px; height: 45px; background: rgba(59, 130, 246, 0.1); color: var(--primary);
-            display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-bottom: 20px; font-size: 1.2rem;
-        }
+        .icon-box { width: 45px; height: 45px; background: rgba(59, 130, 246, 0.1); color: var(--primary); display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-bottom: 20px; font-size: 1.2rem; }
+        
+        .code-block { background: #0f0f0f; padding: 20px; border-radius: 8px; border: 1px solid var(--border); font-family: monospace; color: #a5b4fc; overflow-x: auto; margin-top: 20px; }
 
-        /* --- PLATFORM STATS --- */
-        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-top: 40px; }
-        .stat-item h4 { font-size: 2.5rem; font-weight: 800; color: white; margin-bottom: 5px; }
-        .stat-item span { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
-
-        /* --- ENTERPRISE SECTION --- */
-        .enterprise-hero {
-            background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
-            border-radius: 20px; padding: 40px; text-align: center; border: 1px solid rgba(99, 102, 241, 0.2);
-        }
-
-        /* --- DEVELOPERS SECTION --- */
-        .code-block {
-            background: #0f0f0f; padding: 20px; border-radius: 8px; 
-            border: 1px solid var(--border); font-family: monospace; color: #a5b4fc;
-            overflow-x: auto; margin-top: 20px;
-        }
-
-        /* --- FOOTER --- */
-        footer {
-            margin-top: auto; border-top: 1px solid var(--border); padding: 40px 6%;
-            display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px; background: #050505;
-        }
+        footer { margin-top: auto; border-top: 1px solid var(--border); padding: 40px 6%; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px; background: #050505; }
         .footer-links { display: flex; gap: 20px; flex-wrap: wrap; font-size: 0.85rem; }
         .footer-links a { color: var(--text-muted); text-decoration: none; }
 
-        /* ================= CHAT WIDGET (MOBILE OPTIMIZED) ================= */
+        /* ================= CHAT WIDGET (TERMINAL STYLE) ================= */
         #widget-trigger {
             position: fixed; bottom: 30px; right: 30px;
             width: 60px; height: 60px; border-radius: 50%;
@@ -159,75 +110,101 @@
         #widget-container {
             position: fixed; bottom: 100px; right: 30px;
             width: 380px; height: 600px; max-height: 80vh;
-            background: #171717;
-            border: 1px solid var(--border); border-radius: 16px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            background: var(--term-bg);
+            border: 1px solid #333; border-radius: 8px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
             z-index: 9999; display: none; flex-direction: column;
             overflow: hidden; opacity: 0; transform: translateY(15px);
             transition: all 0.25s ease;
+            font-family: var(--term-font);
         }
         #widget-container.active { opacity: 1; transform: translateY(0); }
 
         /* HEADER */
         .w-header {
-            padding: 15px; background: #202020; border-bottom: 1px solid var(--border);
-            display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; font-weight: 600;
+            padding: 12px 15px; background: #111; border-bottom: 1px solid #333;
+            display: flex; justify-content: space-between; align-items: center; 
+            font-size: 0.9rem; font-weight: 600; color: #fff;
+            font-family: var(--term-font);
         }
-        .admin-badge { background: #ef4444; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; margin-left: 8px; display: none; }
+        .header-title span { color: var(--term-accent); }
 
         /* BODY */
-        .w-body { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; background: #121212; }
+        .w-body { 
+            flex: 1; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; 
+            background: var(--term-bg);
+            background-image: radial-gradient(#222 1px, transparent 1px);
+            background-size: 20px 20px; /* Starfield effect */
+        }
 
-        /* LOGIN FORM */
+        /* LOGIN FORM (Professional on surface, matches theme) */
         .login-form input {
             width: 100%; padding: 14px; margin-bottom: 12px;
-            background: #0a0a0a; border: 1px solid var(--border);
-            border-radius: 8px; color: white; outline: none;
-            font-size: 16px; /* Prevents Zoom on iPhone */
+            background: #111; border: 1px solid #333;
+            border-radius: 4px; color: var(--term-text); outline: none;
+            font-family: var(--term-font); font-size: 16px;
         }
-        .login-form input:focus { border-color: var(--primary); }
+        .login-form input:focus { border-color: var(--term-accent); }
         .login-btn {
-            width: 100%; padding: 14px; background: var(--primary); color: white; border: none;
-            border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 1rem;
+            width: 100%; padding: 14px; background: var(--term-accent); color: white; border: none;
+            border-radius: 4px; font-weight: 600; cursor: pointer; font-family: var(--term-font);
         }
 
-        /* MESSAGES */
-        #w-messages { flex: 1; display: flex; flex-direction: column; gap: 10px; }
-        .msg { max-width: 85%; padding: 10px 14px; border-radius: 12px; font-size: 0.9rem; line-height: 1.4; position: relative; word-wrap: break-word; }
-        .msg.mine { align-self: flex-end; background: var(--primary); color: white; }
-        .msg.other { align-self: flex-start; background: #262626; color: #d4d4d4; }
+        /* TERMINAL MESSAGES */
+        #w-messages { flex: 1; display: flex; flex-direction: column; gap: 4px; padding-bottom: 10px; }
         
-        .trash-btn { 
-            position: absolute; top: -10px; right: -5px; 
-            background: #ef4444; color: white; width: 22px; height: 22px; 
-            border-radius: 50%; font-size: 12px; display: flex; 
-            align-items: center; justify-content: center; cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        .msg-line {
+            padding: 4px 8px;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            color: var(--term-text);
+            position: relative;
+            cursor: pointer;
+            border-left: 2px solid transparent;
         }
+        .msg-line:hover { background: rgba(255,255,255,0.05); border-left: 2px solid var(--term-accent); }
+
+        .sender-tag { font-weight: bold; margin-right: 5px; }
+        .sender-mine { color: var(--term-accent); } /* Purple for me */
+        .sender-other { color: var(--term-cyan); }  /* Cyan for others */
+        
+        .msg-time { float: right; font-size: 0.7rem; color: #555; margin-left: 10px; }
 
         /* FOOTER */
-        .w-footer { padding: 10px; border-top: 1px solid var(--border); display: none; gap: 8px; background: #171717; }
+        .w-footer { padding: 10px; border-top: 1px solid #333; display: none; gap: 8px; background: #111; align-items: center; }
         .w-input { 
-            flex: 1; background: #0a0a0a; border: 1px solid var(--border); 
-            padding: 12px; border-radius: 20px; color: white; outline: none; 
-            font-size: 16px; /* Prevents Zoom on iPhone */
+            flex: 1; background: #000; border: 1px solid #333; 
+            padding: 10px; border-radius: 4px; color: var(--term-text); outline: none; 
+            font-family: var(--term-font); font-size: 16px; 
         }
-        .w-send { background: var(--primary); color: white; border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .w-input:focus { border-color: var(--term-cyan); }
+        .w-send { background: transparent; color: var(--term-accent); border: none; font-size: 1.2rem; cursor: pointer; padding: 0 10px; }
 
-        /* --- MOBILE MEDIA QUERIES --- */
+        /* CUSTOM CONTEXT MENU */
+        #context-menu {
+            position: absolute; display: none; z-index: 10000;
+            background: rgba(10, 10, 10, 0.95); border: 1px solid #444;
+            border-radius: 4px; padding: 5px 0; min-width: 150px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+        .ctx-item {
+            padding: 8px 15px; color: #ccc; font-size: 0.85rem; 
+            cursor: pointer; font-family: var(--term-font); display: flex; align-items: center; gap: 8px;
+        }
+        .ctx-item:hover { background: var(--term-accent); color: white; }
+        .ctx-item i { width: 15px; }
+        .ctx-danger { color: #ff5555; }
+        .ctx-danger:hover { background: #ff5555; color: white; }
+
         @media (max-width: 768px) {
             .nav-links, .cta-nav { display: none; }
             .mobile-toggle { display: block; }
-            
-            /* Chat Widget Full Screen on Mobile */
             #widget-container {
                 width: 100% !important; height: 100% !important; max-height: 100% !important;
                 bottom: 0 !important; right: 0 !important;
                 border-radius: 0 !important; border: none;
-                z-index: 10000;
             }
-            .w-header { padding: 20px; }
-            .w-footer { padding: 15px; padding-bottom: 25px; /* Safe area for modern phones */ }
         }
     </style>
 </head>
@@ -236,8 +213,6 @@
     <!-- NAVIGATION -->
     <nav>
         <div class="logo" onclick="navigateTo('home')"><i class="fas fa-cloud"></i> Cloud Infomac</div>
-        
-        <!-- Desktop Menu -->
         <div class="nav-links">
             <span class="nav-item active" onclick="navigateTo('home')">Home</span>
             <span class="nav-item" onclick="navigateTo('solutions')">Solutions</span>
@@ -246,11 +221,7 @@
             <span class="nav-item" onclick="navigateTo('developers')">Developers</span>
         </div>
         <button class="cta-nav" onclick="navigateTo('contact')">Get Started</button>
-        
-        <!-- Mobile Toggle -->
-        <div class="mobile-toggle" onclick="toggleMobileMenu()">
-            <i class="fas fa-bars"></i>
-        </div>
+        <div class="mobile-toggle" onclick="toggleMobileMenu()"><i class="fas fa-bars"></i></div>
     </nav>
 
     <!-- Mobile Drawer -->
@@ -259,7 +230,6 @@
         <span class="nav-item" onclick="mobileNav('solutions')">Solutions</span>
         <span class="nav-item" onclick="mobileNav('platform')">Platform</span>
         <span class="nav-item" onclick="mobileNav('enterprise')">Enterprise</span>
-        <span class="nav-item" onclick="mobileNav('developers')">Developers</span>
         <span class="nav-item" onclick="mobileNav('contact')">Contact</span>
     </div>
 
@@ -268,7 +238,7 @@
         <canvas id="bg-canvas"></canvas>
         <div class="hero-section">
             <h1>Infrastructure for<br>Modern Enterprises</h1>
-            <p class="subtitle">Cloud Infomac delivers scalable, secure, and reliable backend architecture for the digital age.</p>
+            <p class="subtitle">Cloud Infomac delivers scalable, secure, and reliable backend architecture.</p>
             <div class="hero-btns">
                 <button class="btn btn-primary" onclick="navigateTo('solutions')">Explore Solutions</button>
                 <button class="btn btn-secondary" onclick="navigateTo('developers')">Documentation</button>
@@ -279,26 +249,11 @@
     <!-- PAGE 2: SOLUTIONS -->
     <div id="page-solutions" class="page">
         <div class="content-container">
-            <div class="page-header">
-                <h2>Enterprise Solutions</h2>
-                <p>Tailored technology stacks designed for performance.</p>
-            </div>
+            <div class="page-header"><h2>Enterprise Solutions</h2></div>
             <div class="grid-3">
-                <div class="feature-card">
-                    <div class="icon-box"><i class="fas fa-layer-group"></i></div>
-                    <h3>Full-Stack Dev</h3>
-                    <p>End-to-end application development using modern cloud primitives.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="icon-box"><i class="fas fa-shield-alt"></i></div>
-                    <h3>Cybersecurity</h3>
-                    <p>Comprehensive security analysis and penetration testing.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="icon-box"><i class="fas fa-server"></i></div>
-                    <h3>Cloud Migration</h3>
-                    <p>Seamless transition of legacy systems to scalable cloud infrastructures.</p>
-                </div>
+                <div class="feature-card"><div class="icon-box"><i class="fas fa-layer-group"></i></div><h3>Full-Stack Dev</h3><p>Modern cloud primitives.</p></div>
+                <div class="feature-card"><div class="icon-box"><i class="fas fa-shield-alt"></i></div><h3>Cybersecurity</h3><p>Security analysis.</p></div>
+                <div class="feature-card"><div class="icon-box"><i class="fas fa-server"></i></div><h3>Cloud Migration</h3><p>Scalable infrastructures.</p></div>
             </div>
         </div>
     </div>
@@ -306,166 +261,117 @@
     <!-- PAGE 3: PLATFORM -->
     <div id="page-platform" class="page">
         <div class="content-container">
-            <div class="page-header">
-                <h2>Global Scale Platform</h2>
-                <p>Deploy instantly to our global edge network.</p>
-            </div>
+            <div class="page-header"><h2>Global Scale Platform</h2></div>
             <div class="stat-grid">
                 <div class="stat-item"><h4>99.99%</h4><span>Uptime</span></div>
                 <div class="stat-item"><h4>50ms</h4><span>Latency</span></div>
-                <div class="stat-item"><h4>24/7</h4><span>Support</span></div>
                 <div class="stat-item"><h4>Global</h4><span>CDN</span></div>
             </div>
         </div>
     </div>
 
-    <!-- PAGE 4: ENTERPRISE (NEW) -->
+    <!-- PAGE 4: ENTERPRISE -->
     <div id="page-enterprise" class="page">
         <div class="content-container">
-            <div class="page-header">
-                <h2>Enterprise Grade</h2>
-                <p>Security, compliance, and dedicated support for large organizations.</p>
-            </div>
-            <div class="enterprise-hero">
-                <h3>SOC2 Compliant Infrastructure</h3>
-                <p style="color:#a5b4fc; margin-top:10px;">We adhere to the strictest data protection standards.</p>
-                <div class="grid-3" style="margin-top:40px; text-align:left;">
-                    <div>
-                        <h4 style="color:white; margin-bottom:5px;">SSO Integration</h4>
-                        <p style="font-size:0.9rem; color:#94a3b8;">SAML, OIDC, and LDAP support.</p>
-                    </div>
-                    <div>
-                        <h4 style="color:white; margin-bottom:5px;">Audit Logs</h4>
-                        <p style="font-size:0.9rem; color:#94a3b8;">Full visibility into team actions.</p>
-                    </div>
-                    <div>
-                        <h4 style="color:white; margin-bottom:5px;">SLA Guarantees</h4>
-                        <p style="font-size:0.9rem; color:#94a3b8;">Contractual uptime assurances.</p>
-                    </div>
-                </div>
+            <div class="enterprise-hero" style="background:#111; padding:40px; border-radius:12px; border:1px solid #333;">
+                <h3>SOC2 Compliant</h3>
+                <p style="color:#a1a1aa">We adhere to the strictest standards.</p>
             </div>
         </div>
     </div>
 
-    <!-- PAGE 5: DEVELOPERS (NEW) -->
+    <!-- PAGE 5: DEVELOPERS -->
     <div id="page-developers" class="page">
         <div class="content-container">
-            <div class="page-header">
-                <h2>Developer API</h2>
-                <p>Build on top of Cloud Infomac with our robust API.</p>
-            </div>
-            <p style="color:var(--text-muted)">Install our CLI to get started:</p>
-            <div class="code-block">
-                $ npm install -g cloud-infomac-cli<br>
-                $ infomac init
-            </div>
-            <div style="margin-top:30px;">
-                <button class="btn btn-secondary">Read API Docs</button>
-            </div>
+            <h2>Developer API</h2>
+            <div class="code-block">$ npm install -g cloud-infomac-cli</div>
         </div>
     </div>
 
     <!-- PAGE 6: CONTACT -->
     <div id="page-contact" class="page">
         <div class="content-container" style="text-align:center; padding-top:100px;">
-            <h2>Start Building Today</h2>
-            <p style="margin-bottom:30px; color:var(--text-muted);">Contact our sales team to discuss requirements.</p>
-            <button class="btn btn-primary">Email Sales</button>
+            <h2>Start Building</h2>
+            <button class="btn btn-primary" style="margin-top:20px;">Email Sales</button>
         </div>
     </div>
 
     <!-- FOOTER -->
     <footer>
         <div style="font-weight:700; color:white;">Cloud Infomac</div>
-        <div class="footer-links">
-            <a href="#">Privacy</a>
-            <a href="#">Terms</a>
-            <a href="#">Status</a>
-            <a href="#">GitHub</a>
-        </div>
+        <div class="footer-links"><a href="#">Privacy</a><a href="#">Terms</a></div>
     </footer>
 
 
-    <!-- ==================== AI CHAT WIDGET ==================== -->
-    <div id="widget-trigger" onclick="toggleWidget()">
-        <i class="fas fa-robot"></i>
-    </div>
+    <!-- ================= CHAT WIDGET (TERMINAL) ================= -->
+    <div id="widget-trigger" onclick="toggleWidget()"><i class="fas fa-terminal"></i></div>
 
     <div id="widget-container">
+        <!-- Header: Shows Room and User -->
         <div class="w-header">
-            <div>AI Assistant <span id="admin-indicator" class="admin-badge">ADMIN</span></div>
-            <span class="w-close" onclick="toggleWidget()">&times;</span>
+            <div class="header-title" id="chat-header-info">#<span style="color:#777">disconnected</span></div>
+            <span onclick="toggleWidget()" style="cursor:pointer">&times;</span>
         </div>
 
-        <div class="w-body">
+        <div class="w-body" id="w-body">
             <!-- Login -->
             <div id="view-login" class="login-form">
-                <div style="text-align:center; margin-bottom:20px; color:var(--text-muted); font-size:0.85rem;">
-                    Restricted Access. Verify Credentials.
+                <div style="text-align:center; margin-bottom:20px; font-family:var(--term-font); color:var(--term-text);">
+                    <i class="fas fa-user-secret" style="font-size:30px; margin-bottom:10px;"></i><br>
+                    SECURE TERMINAL UPLINK
                 </div>
-                <input type="text" id="inp-room" placeholder="Session ID">
-                <input type="text" id="inp-user" placeholder="Alias">
-                <input type="password" id="inp-secret" placeholder="Auth Key (Admin)">
-                <button class="login-btn" onclick="connectChat()">Connect</button>
+                <input type="text" id="inp-room" placeholder="Target Session ID">
+                <input type="text" id="inp-user" placeholder="Operative Alias">
+                <input type="password" id="inp-secret" placeholder="Auth Key (Optional)">
+                <button class="login-btn" onclick="connectChat()">INITIALIZE CONNECTION</button>
             </div>
 
             <!-- Messages -->
-            <div id="view-messages" style="display:none; height:100%; flex-direction:column;">
-                <div id="w-messages"></div>
-            </div>
+            <div id="w-messages" style="display:none;"></div>
         </div>
 
         <div class="w-footer" id="view-footer">
-            <input type="text" class="w-input" id="inp-msg" placeholder="Message..." autocomplete="off">
+            <span style="color:#555; font-family:var(--term-font); margin-right:5px;">&gt;</span>
+            <input type="text" class="w-input" id="inp-msg" placeholder="..." autocomplete="off">
             <button class="w-send" onclick="sendMsg()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+        
+        <!-- Context Menu -->
+        <div id="context-menu">
+            <div class="ctx-item" onclick="copyText()"><i class="fas fa-copy"></i> Copy Text</div>
+            <div class="ctx-item" onclick="speakText()"><i class="fas fa-volume-up"></i> Speak Message</div>
+            <div class="ctx-item ctx-danger" id="ctx-delete" onclick="deleteMessageAction()"><i class="fas fa-trash"></i> Delete Message</div>
         </div>
     </div>
 
     <script src="https://www.cloudinfomac.com/socket.io/socket.io.js"></script>
     <script>
-        // --- NAVIGATION LOGIC ---
+        // --- NAVIGATION ---
         function navigateTo(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(`page-${pageId}`).classList.add('active');
-            
-            // Update Desktop Nav
-            document.querySelectorAll('.nav-links .nav-item').forEach(item => {
+            document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.remove('active');
                 if(item.innerText.toLowerCase() === pageId) item.classList.add('active');
             });
             window.scrollTo(0,0);
         }
+        function toggleMobileMenu() { document.getElementById('mobile-drawer').classList.toggle('open'); }
+        function mobileNav(id) { navigateTo(id); document.getElementById('mobile-drawer').classList.remove('open'); }
 
-        function toggleMobileMenu() {
-            document.getElementById('mobile-drawer').classList.toggle('open');
-        }
-
-        function mobileNav(pageId) {
-            navigateTo(pageId);
-            document.getElementById('mobile-drawer').classList.remove('open');
-        }
-
-        // --- BACKGROUND ANIMATION ---
+        // --- ANIMATION ---
         const canvas = document.getElementById('bg-canvas');
         if(canvas) {
             const ctx = canvas.getContext('2d');
             let w, h;
-            function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
-            window.addEventListener('resize', resize);
-            resize();
-            const particles = Array.from({length: 30}, () => ({
-                x: Math.random()*w, y: Math.random()*h,
-                vx: (Math.random()-0.5)*0.3, vy: (Math.random()-0.5)*0.3,
-                size: Math.random()*2
-            }));
+            const resize = () => { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; };
+            window.addEventListener('resize', resize); resize();
+            const p = Array.from({length:30}, () => ({x:Math.random()*w, y:Math.random()*h, vx:(Math.random()-0.5)*0.3, vy:(Math.random()-0.5)*0.3}));
             function animate() {
-                ctx.clearRect(0,0,w,h);
-                ctx.fillStyle = "rgba(255,255,255,0.2)";
-                particles.forEach(p => {
-                    p.x += p.vx; p.y += p.vy;
-                    if(p.x<0) p.x=w; if(p.x>w) p.x=0;
-                    if(p.y<0) p.y=h; if(p.y>h) p.y=0;
-                    ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill();
+                ctx.clearRect(0,0,w,h); ctx.fillStyle="rgba(255,255,255,0.2)";
+                p.forEach(pt => {
+                    pt.x+=pt.vx; pt.y+=pt.vy; if(pt.x<0)pt.x=w; if(pt.x>w)pt.x=0; if(pt.y<0)pt.y=h; if(pt.y>h)pt.y=0;
+                    ctx.beginPath(); ctx.arc(pt.x, pt.y, Math.random()*2, 0, Math.PI*2); ctx.fill();
                 });
                 requestAnimationFrame(animate);
             }
@@ -475,16 +381,13 @@
         // --- CHAT LOGIC ---
         const socket = io('https://www.cloudinfomac.com');
         let myId, myRoom, myCode, isAdmin;
+        let selectedMsgId = null;
+        let selectedMsgText = "";
 
         function toggleWidget() {
             const el = document.getElementById('widget-container');
-            if (el.style.display === 'flex') {
-                el.classList.remove('active');
-                setTimeout(() => el.style.display = 'none', 250);
-            } else {
-                el.style.display = 'flex';
-                setTimeout(() => el.classList.add('active'), 10);
-            }
+            if(el.style.display==='flex') { el.classList.remove('active'); setTimeout(()=>el.style.display='none',250); }
+            else { el.style.display='flex'; setTimeout(()=>el.classList.add('active'),10); }
         }
 
         function connectChat() {
@@ -500,15 +403,17 @@
             myId = data.userId;
             isAdmin = data.isCreator;
             
-            // Show Admin Badge
-            document.getElementById('admin-indicator').style.display = isAdmin ? 'inline-block' : 'none';
-
-            document.getElementById('view-login').style.display = 'none';
-            document.getElementById('view-messages').style.display = 'flex';
-            document.getElementById('view-footer').style.display = 'flex';
+            // UI Switch
+            document.getElementById('view-login').style.display='none';
+            document.getElementById('w-messages').style.display='flex';
+            document.getElementById('view-footer').style.display='flex';
             
+            // Header Update: #Room | User
+            const shortUser = data.username.length > 10 ? data.username.substring(0,8)+'..' : data.username;
+            document.getElementById('chat-header-info').innerHTML = `<span>#${data.roomId}</span> | ${shortUser}`;
+
             const area = document.getElementById('w-messages');
-            area.innerHTML = `<div style="text-align:center; font-size:0.7rem; color:#525252; margin-bottom:10px;">Session: ${data.roomId}</div>`;
+            area.innerHTML = '';
             data.history.forEach(renderMsg);
             scrollToBottom();
         });
@@ -516,53 +421,108 @@
         socket.on('message', (msg) => { renderMsg(msg); scrollToBottom(); });
         socket.on('messageDeleted', ({messageId}) => {
             const el = document.getElementById(`msg-${messageId}`);
-            if(el) el.remove();
+            if(el) {
+                el.style.opacity = '0.5';
+                el.innerHTML = `<span style="color:#555;">[deleted]</span>`;
+            }
         });
 
         function sendMsg() {
             const inp = document.getElementById('inp-msg');
             const txt = inp.value.trim();
             if(!txt) return;
-            socket.emit('chatMessage', {
-                roomId: myRoom,
-                username: document.getElementById('inp-user').value || 'User',
-                message: txt
-            });
+            socket.emit('chatMessage', { roomId: myRoom, username: document.getElementById('inp-user').value || 'Guest', message: txt });
             inp.value = '';
         }
-        document.getElementById('inp-msg').addEventListener('keypress', (e) => { if(e.key === 'Enter') sendMsg(); });
+        document.getElementById('inp-msg').addEventListener('keypress', (e) => { if(e.key==='Enter') sendMsg(); });
 
         function renderMsg(msg) {
             const area = document.getElementById('w-messages');
             const isMe = msg.senderId === myId;
             
             const div = document.createElement('div');
-            div.className = `msg ${isMe ? 'mine' : 'other'}`;
+            div.className = 'msg-line';
             div.id = `msg-${msg.id}`;
+            div.setAttribute('data-id', msg.id);
+            div.setAttribute('data-text', msg.text);
+            div.setAttribute('data-mine', isMe); // Used for context menu logic
             
-            let html = `<div>${msg.text}</div>`;
+            // Terminal Format: <user> message <time>
+            const userColorClass = isMe ? 'sender-mine' : 'sender-other';
+            const userLabel = isMe ? 'me' : msg.senderName;
             
-            if(isAdmin || isMe) {
-                html += `<div class="trash-btn" onclick="deleteMsg(${msg.id})"><i class="fas fa-times"></i></div>`;
-            }
-            
-            if(!isMe) {
-                html = `<div style="font-size:0.7rem; opacity:0.7; margin-bottom:2px;">${msg.senderName}</div>` + html;
-            }
+            div.innerHTML = `
+                <span class="sender-tag ${userColorClass}">${userLabel}</span>
+                <span class="msg-content">${msg.text}</span>
+                <span class="msg-time">${msg.timestamp}</span>
+            `;
 
-            div.innerHTML = html;
+            // Event Listeners for Context Menu
+            div.addEventListener('contextmenu', (e) => showContext(e, msg.id, msg.text, isMe));
+            div.addEventListener('click', (e) => showContext(e, msg.id, msg.text, isMe)); // Click also works for mobile
+
             area.appendChild(div);
         }
 
-        function deleteMsg(id) {
-            if(confirm("Delete record?")) {
-                socket.emit('deleteMessage', { roomId: myRoom, messageId: id, secretCode: myCode });
-            }
+        function scrollToBottom() {
+            const b = document.getElementById('w-body');
+            b.scrollTop = b.scrollHeight;
         }
 
-        function scrollToBottom() {
-            const b = document.querySelector('.w-body');
-            b.scrollTop = b.scrollHeight;
+        // --- CONTEXT MENU LOGIC ---
+        const ctxMenu = document.getElementById('context-menu');
+        
+        function showContext(e, id, text, isMe) {
+            e.preventDefault();
+            selectedMsgId = id;
+            selectedMsgText = text;
+            
+            // Show delete only if Admin or Own Message
+            const delBtn = document.getElementById('ctx-delete');
+            if (isAdmin || isMe) {
+                delBtn.style.display = 'flex';
+            } else {
+                delBtn.style.display = 'none';
+            }
+
+            // Position Menu
+            // Calculate position relative to the widget container
+            const widgetRect = document.getElementById('widget-container').getBoundingClientRect();
+            let x = e.clientX - widgetRect.left;
+            let y = e.clientY - widgetRect.top;
+            
+            // Adjust if out of bounds
+            if (x + 150 > widgetRect.width) x = widgetRect.width - 160;
+            if (y + 100 > widgetRect.height) y = widgetRect.height - 110;
+
+            ctxMenu.style.left = x + 'px';
+            ctxMenu.style.top = y + 'px';
+            ctxMenu.style.display = 'block';
+        }
+
+        // Hide menu on click elsewhere
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.msg-line')) {
+                ctxMenu.style.display = 'none';
+            }
+        });
+
+        function copyText() {
+            navigator.clipboard.writeText(selectedMsgText);
+            ctxMenu.style.display = 'none';
+        }
+
+        function speakText() {
+            const utter = new SpeechSynthesisUtterance(selectedMsgText);
+            window.speechSynthesis.speak(utter);
+            ctxMenu.style.display = 'none';
+        }
+
+        function deleteMessageAction() {
+            if(confirm("Delete this line?")) {
+                socket.emit('deleteMessage', { roomId: myRoom, messageId: selectedMsgId, secretCode: myCode });
+            }
+            ctxMenu.style.display = 'none';
         }
     </script>
 </body>
