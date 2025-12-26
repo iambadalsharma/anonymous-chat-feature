@@ -18,7 +18,7 @@
             /* CHAT THEME VARIABLES - UPDATED */
             --term-bg: #000000;     /* Plain Black */
             --term-text: #e0e0e0;
-            --term-accent: #3b82f6; /* Website Blue instead of Pink */
+            --term-accent: #3b82f6; /* Website Blue */
             --term-font: 'Courier New', Courier, monospace;
         }
 
@@ -115,7 +115,6 @@
             z-index: 9999; display: none; flex-direction: column;
             overflow: hidden; opacity: 0; transform: translateY(15px);
             transition: all 0.25s ease;
-            /* No global font-family here so inputs can override */
         }
         #widget-container.active { opacity: 1; transform: translateY(0); }
 
@@ -152,14 +151,16 @@
 
         /* MESSAGES - Bottom Up */
         #w-messages { 
-            flex: 1; display: flex; flex-direction: column; gap: 4px; padding-bottom: 10px;
+            flex: 1; display: flex; flex-direction: column; 
+            gap: 2px; /* TIGHTER GAP */
+            padding-bottom: 10px;
             justify-content: flex-end; /* Messages start from bottom */
         }
         
         .msg-line {
-            padding: 4px 8px;
+            padding: 2px 8px; /* TIGHTER PADDING */
             font-size: 0.9rem;
-            line-height: 1.4;
+            line-height: 1.3;
             color: var(--term-text);
             position: relative;
             cursor: pointer;
