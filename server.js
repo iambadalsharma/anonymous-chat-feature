@@ -15,8 +15,6 @@ const io = new Server(server, {
 app.use(express.static(__dirname));
 
 // --- In-Memory State ---
-// NOTE: On free hosting (like Render Free Tier), this data resets if the server "sleeps".
-// For permanent storage, you would need to connect a database like MongoDB.
 const rooms = {}; 
 let messageCounter = 1; 
 
@@ -26,7 +24,6 @@ io.on('connection', (socket) => {
     socket.on('joinRoom', ({ roomId, username, secretCode }) => {
         socket.join(roomId);
 
-        // Create room if it doesn't exist
         if (!rooms[roomId]) {
             rooms[roomId] = {
                 secretCode: secretCode || "", 
@@ -73,7 +70,7 @@ io.on('connection', (socket) => {
         }
     });
 
-    // --- 3. Deletion Logic ---
+    // --- 3. Single Deletion Logic ---
     socket.on('deleteMessage', (data) => {
         const { roomId, messageId, secretCode } = data;
         const room = rooms[roomId];
@@ -85,7 +82,6 @@ io.on('connection', (socket) => {
 
         const message = room.messages[msgIndex];
 
-        // Security Check
         const roomHasCode = room.secretCode && room.secretCode.length > 0;
         const isAdmin = (roomHasCode && secretCode === room.secretCode);
         const isSender = (message.senderId === socket.id);
@@ -93,6 +89,22 @@ io.on('connection', (socket) => {
         if (isAdmin || isSender) {
             room.messages.splice(msgIndex, 1);
             io.to(roomId).emit('messageDeleted', { messageId });
+        }
+    });
+
+    // --- 4. Bulk Delete (Admin Only) ---
+    socket.on('deleteAllMessages', (data) => {
+        const { roomId, secretCode } = data;
+        const room = rooms[roomId];
+
+        if (!room) return;
+
+        const roomHasCode = room.secretCode && room.secretCode.length > 0;
+        const isAdmin = (roomHasCode && secretCode === room.secretCode);
+
+        if (isAdmin) {
+            room.messages = []; // Wipe history
+            io.to(roomId).emit('chatCleared');
         }
     });
 });
