@@ -15,11 +15,10 @@
             --font-main: 'Inter', system-ui, -apple-system, sans-serif;
             --nav-height: 70px;
             
-            /* CHAT THEME VARIABLES */
-            --term-bg: #050505;
+            /* CHAT THEME VARIABLES - UPDATED */
+            --term-bg: #000000;     /* Plain Black */
             --term-text: #e0e0e0;
-            --term-accent: #d946ef; /* Neon Purple */
-            --term-cyan: #06b6d4;   /* Neon Cyan */
+            --term-accent: #3b82f6; /* Website Blue instead of Pink */
             --term-font: 'Courier New', Courier, monospace;
         }
 
@@ -110,13 +109,13 @@
         #widget-container {
             position: fixed; bottom: 100px; right: 30px;
             width: 380px; height: 600px; max-height: 80vh;
-            background: var(--term-bg);
+            background: var(--term-bg); /* Plain Black */
             border: 1px solid #333; border-radius: 8px;
             box-shadow: 0 20px 50px rgba(0,0,0,0.8);
             z-index: 9999; display: none; flex-direction: column;
             overflow: hidden; opacity: 0; transform: translateY(15px);
             transition: all 0.25s ease;
-            font-family: var(--term-font);
+            /* No global font-family here so inputs can override */
         }
         #widget-container.active { opacity: 1; transform: translateY(0); }
 
@@ -125,62 +124,66 @@
             padding: 12px 15px; background: #111; border-bottom: 1px solid #333;
             display: flex; justify-content: space-between; align-items: center; 
             font-size: 0.9rem; font-weight: 600; color: #fff;
-            font-family: var(--term-font);
+            font-family: var(--font-main);
         }
         .header-title span { color: var(--term-accent); }
+        .admin-controls { display: none; gap: 10px; align-items: center; margin-right: 10px; }
+        .clear-all-btn { color: #ef4444; cursor: pointer; font-size: 0.8rem; border: 1px solid #ef4444; padding: 2px 8px; border-radius: 4px; }
+        .clear-all-btn:hover { background: #ef4444; color: white; }
 
         /* BODY */
         .w-body { 
             flex: 1; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; 
-            background: var(--term-bg);
-            background-image: radial-gradient(#222 1px, transparent 1px);
-            background-size: 20px 20px; /* Starfield effect */
+            background: var(--term-bg); /* Plain Black */
         }
 
-        /* LOGIN FORM (Professional on surface, matches theme) */
+        /* LOGIN FORM */
         .login-form input {
             width: 100%; padding: 14px; margin-bottom: 12px;
             background: #111; border: 1px solid #333;
             border-radius: 4px; color: var(--term-text); outline: none;
-            font-family: var(--term-font); font-size: 16px;
+            font-family: var(--font-main); font-size: 16px;
         }
         .login-form input:focus { border-color: var(--term-accent); }
         .login-btn {
             width: 100%; padding: 14px; background: var(--term-accent); color: white; border: none;
-            border-radius: 4px; font-weight: 600; cursor: pointer; font-family: var(--term-font);
+            border-radius: 4px; font-weight: 600; cursor: pointer; font-family: var(--font-main);
         }
 
-        /* TERMINAL MESSAGES */
-        #w-messages { flex: 1; display: flex; flex-direction: column; gap: 4px; padding-bottom: 10px; }
+        /* MESSAGES - Bottom Up */
+        #w-messages { 
+            flex: 1; display: flex; flex-direction: column; gap: 4px; padding-bottom: 10px;
+            justify-content: flex-end; /* Messages start from bottom */
+        }
         
         .msg-line {
             padding: 4px 8px;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             line-height: 1.4;
             color: var(--term-text);
             position: relative;
             cursor: pointer;
             border-left: 2px solid transparent;
+            font-family: var(--font-main); /* Standard font */
         }
         .msg-line:hover { background: rgba(255,255,255,0.05); border-left: 2px solid var(--term-accent); }
 
-        .sender-tag { font-weight: bold; margin-right: 5px; }
-        .sender-mine { color: var(--term-accent); } /* Purple for me */
-        .sender-other { color: var(--term-cyan); }  /* Cyan for others */
-        
-        .msg-time { float: right; font-size: 0.7rem; color: #555; margin-left: 10px; }
+        .sender-tag { font-weight: bold; margin-right: 5px; font-size: 0.85rem; font-family: var(--term-font); }
+        .msg-content { font-family: var(--font-main); }
+        .msg-time { float: right; font-size: 0.7rem; color: #555; margin-left: 10px; margin-top: 3px; font-family: var(--font-main); }
 
         /* FOOTER */
         .w-footer { padding: 10px; border-top: 1px solid #333; display: none; gap: 8px; background: #111; align-items: center; }
         .w-input { 
             flex: 1; background: #000; border: 1px solid #333; 
             padding: 10px; border-radius: 4px; color: var(--term-text); outline: none; 
-            font-family: var(--term-font); font-size: 16px; 
+            font-family: var(--font-main); /* Normal Font */
+            font-size: 16px; 
         }
-        .w-input:focus { border-color: var(--term-cyan); }
+        .w-input:focus { border-color: var(--term-accent); }
         .w-send { background: transparent; color: var(--term-accent); border: none; font-size: 1.2rem; cursor: pointer; padding: 0 10px; }
 
-        /* CUSTOM CONTEXT MENU */
+        /* CONTEXT MENU */
         #context-menu {
             position: absolute; display: none; z-index: 10000;
             background: rgba(10, 10, 10, 0.95); border: 1px solid #444;
@@ -190,7 +193,7 @@
         }
         .ctx-item {
             padding: 8px 15px; color: #ccc; font-size: 0.85rem; 
-            cursor: pointer; font-family: var(--term-font); display: flex; align-items: center; gap: 8px;
+            cursor: pointer; font-family: var(--font-main); display: flex; align-items: center; gap: 8px;
         }
         .ctx-item:hover { background: var(--term-accent); color: white; }
         .ctx-item i { width: 15px; }
@@ -307,23 +310,28 @@
     <div id="widget-trigger" onclick="toggleWidget()"><i class="fas fa-terminal"></i></div>
 
     <div id="widget-container">
-        <!-- Header: Shows Room and User -->
+        <!-- Header -->
         <div class="w-header">
             <div class="header-title" id="chat-header-info">#<span style="color:#777">disconnected</span></div>
-            <span onclick="toggleWidget()" style="cursor:pointer">&times;</span>
+            <div style="display:flex; align-items:center;">
+                <div id="admin-tools" class="admin-controls" onclick="deleteAll()">
+                    <span class="clear-all-btn">CLEAR ALL</span>
+                </div>
+                <span onclick="toggleWidget()" style="cursor:pointer; margin-left:10px;">&times;</span>
+            </div>
         </div>
 
         <div class="w-body" id="w-body">
             <!-- Login -->
             <div id="view-login" class="login-form">
-                <div style="text-align:center; margin-bottom:20px; font-family:var(--term-font); color:var(--term-text);">
+                <div style="text-align:center; margin-bottom:20px; font-family:var(--font-main); color:var(--text-main);">
                     <i class="fas fa-user-secret" style="font-size:30px; margin-bottom:10px;"></i><br>
-                    SECURE TERMINAL UPLINK
+                    SECURE UPLINK
                 </div>
                 <input type="text" id="inp-room" placeholder="Target Session ID">
                 <input type="text" id="inp-user" placeholder="Operative Alias">
                 <input type="password" id="inp-secret" placeholder="Auth Key (Optional)">
-                <button class="login-btn" onclick="connectChat()">INITIALIZE CONNECTION</button>
+                <button class="login-btn" onclick="connectChat()">INITIALIZE</button>
             </div>
 
             <!-- Messages -->
@@ -331,7 +339,7 @@
         </div>
 
         <div class="w-footer" id="view-footer">
-            <span style="color:#555; font-family:var(--term-font); margin-right:5px;">&gt;</span>
+            <span style="color:#555; margin-right:5px;">&gt;</span>
             <input type="text" class="w-input" id="inp-msg" placeholder="..." autocomplete="off">
             <button class="w-send" onclick="sendMsg()"><i class="fas fa-paper-plane"></i></button>
         </div>
@@ -346,6 +354,18 @@
 
     <script src="https://www.cloudinfomac.com/socket.io/socket.io.js"></script>
     <script>
+        // --- UTILS ---
+        // Generate a persistent color from a string (name)
+        function stringToColor(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = str.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            // Use HSL for better visibility (Saturation 70%, Lightness 60%)
+            const h = Math.abs(hash) % 360;
+            return `hsl(${h}, 70%, 60%)`;
+        }
+
         // --- NAVIGATION ---
         function navigateTo(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -403,12 +423,14 @@
             myId = data.userId;
             isAdmin = data.isCreator;
             
-            // UI Switch
             document.getElementById('view-login').style.display='none';
             document.getElementById('w-messages').style.display='flex';
             document.getElementById('view-footer').style.display='flex';
             
-            // Header Update: #Room | User
+            // Show Admin Tools
+            if (isAdmin) document.getElementById('admin-tools').style.display = 'flex';
+            else document.getElementById('admin-tools').style.display = 'none';
+
             const shortUser = data.username.length > 10 ? data.username.substring(0,8)+'..' : data.username;
             document.getElementById('chat-header-info').innerHTML = `<span>#${data.roomId}</span> | ${shortUser}`;
 
@@ -421,10 +443,11 @@
         socket.on('message', (msg) => { renderMsg(msg); scrollToBottom(); });
         socket.on('messageDeleted', ({messageId}) => {
             const el = document.getElementById(`msg-${messageId}`);
-            if(el) {
-                el.style.opacity = '0.5';
-                el.innerHTML = `<span style="color:#555;">[deleted]</span>`;
-            }
+            if(el) { el.style.opacity = '0.5'; el.innerHTML = `<span style="color:#555;">[deleted]</span>`; }
+        });
+        
+        socket.on('chatCleared', () => {
+            document.getElementById('w-messages').innerHTML = '';
         });
 
         function sendMsg() {
@@ -436,6 +459,12 @@
         }
         document.getElementById('inp-msg').addEventListener('keypress', (e) => { if(e.key==='Enter') sendMsg(); });
 
+        function deleteAll() {
+            if(confirm("WARNING: Delete ALL messages in this room?")) {
+                socket.emit('deleteAllMessages', { roomId: myRoom, secretCode: myCode });
+            }
+        }
+
         function renderMsg(msg) {
             const area = document.getElementById('w-messages');
             const isMe = msg.senderId === myId;
@@ -445,21 +474,19 @@
             div.id = `msg-${msg.id}`;
             div.setAttribute('data-id', msg.id);
             div.setAttribute('data-text', msg.text);
-            div.setAttribute('data-mine', isMe); // Used for context menu logic
             
-            // Terminal Format: <user> message <time>
-            const userColorClass = isMe ? 'sender-mine' : 'sender-other';
+            const userColor = stringToColor(msg.senderName);
             const userLabel = isMe ? 'me' : msg.senderName;
             
+            // Style: Name is colored, Text is standard
             div.innerHTML = `
-                <span class="sender-tag ${userColorClass}">${userLabel}</span>
+                <span class="sender-tag" style="color:${userColor}">${userLabel}</span>
                 <span class="msg-content">${msg.text}</span>
                 <span class="msg-time">${msg.timestamp}</span>
             `;
 
-            // Event Listeners for Context Menu
             div.addEventListener('contextmenu', (e) => showContext(e, msg.id, msg.text, isMe));
-            div.addEventListener('click', (e) => showContext(e, msg.id, msg.text, isMe)); // Click also works for mobile
+            div.addEventListener('click', (e) => showContext(e, msg.id, msg.text, isMe));
 
             area.appendChild(div);
         }
@@ -469,7 +496,7 @@
             b.scrollTop = b.scrollHeight;
         }
 
-        // --- CONTEXT MENU LOGIC ---
+        // --- CONTEXT MENU ---
         const ctxMenu = document.getElementById('context-menu');
         
         function showContext(e, id, text, isMe) {
@@ -477,21 +504,14 @@
             selectedMsgId = id;
             selectedMsgText = text;
             
-            // Show delete only if Admin or Own Message
             const delBtn = document.getElementById('ctx-delete');
-            if (isAdmin || isMe) {
-                delBtn.style.display = 'flex';
-            } else {
-                delBtn.style.display = 'none';
-            }
+            if (isAdmin || isMe) delBtn.style.display = 'flex';
+            else delBtn.style.display = 'none';
 
-            // Position Menu
-            // Calculate position relative to the widget container
             const widgetRect = document.getElementById('widget-container').getBoundingClientRect();
             let x = e.clientX - widgetRect.left;
             let y = e.clientY - widgetRect.top;
             
-            // Adjust if out of bounds
             if (x + 150 > widgetRect.width) x = widgetRect.width - 160;
             if (y + 100 > widgetRect.height) y = widgetRect.height - 110;
 
@@ -500,28 +520,14 @@
             ctxMenu.style.display = 'block';
         }
 
-        // Hide menu on click elsewhere
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('.msg-line')) {
-                ctxMenu.style.display = 'none';
-            }
+            if (!e.target.closest('.msg-line')) ctxMenu.style.display = 'none';
         });
 
-        function copyText() {
-            navigator.clipboard.writeText(selectedMsgText);
-            ctxMenu.style.display = 'none';
-        }
-
-        function speakText() {
-            const utter = new SpeechSynthesisUtterance(selectedMsgText);
-            window.speechSynthesis.speak(utter);
-            ctxMenu.style.display = 'none';
-        }
-
+        function copyText() { navigator.clipboard.writeText(selectedMsgText); ctxMenu.style.display = 'none'; }
+        function speakText() { window.speechSynthesis.speak(new SpeechSynthesisUtterance(selectedMsgText)); ctxMenu.style.display = 'none'; }
         function deleteMessageAction() {
-            if(confirm("Delete this line?")) {
-                socket.emit('deleteMessage', { roomId: myRoom, messageId: selectedMsgId, secretCode: myCode });
-            }
+            if(confirm("Delete line?")) socket.emit('deleteMessage', { roomId: myRoom, messageId: selectedMsgId, secretCode: myCode });
             ctxMenu.style.display = 'none';
         }
     </script>
