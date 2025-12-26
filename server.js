@@ -15,6 +15,8 @@ const io = new Server(server, {
 app.use(express.static(__dirname));
 
 // --- In-Memory State ---
+// NOTE: On free hosting (like Render Free Tier), this data resets if the server "sleeps".
+// For permanent storage, you would need to connect a database like MongoDB.
 const rooms = {}; 
 let messageCounter = 1; 
 
@@ -27,19 +29,16 @@ io.on('connection', (socket) => {
         // Create room if it doesn't exist
         if (!rooms[roomId]) {
             rooms[roomId] = {
-                secretCode: secretCode || "", // Store the password
+                secretCode: secretCode || "", 
                 messages: []
             };
         }
 
         const room = rooms[roomId];
         
-        // Admin Validation
-        // You are Admin ONLY if the room has a password AND you provided the matching password.
+        // Admin Check
         const roomHasCode = room.secretCode && room.secretCode.length > 0;
         const providedMatch = secretCode === room.secretCode;
-        
-        // If room has no code, no one is admin (public room).
         const isAdmin = roomHasCode && providedMatch;
 
         const displayName = username && username.trim() !== "" 
@@ -50,7 +49,7 @@ io.on('connection', (socket) => {
             roomId: roomId,
             userId: socket.id,
             username: displayName,
-            isCreator: isAdmin, // Sends TRUE if you are Admin
+            isCreator: isAdmin,
             history: room.messages
         });
     });
@@ -74,7 +73,7 @@ io.on('connection', (socket) => {
         }
     });
 
-    // --- 3. Deletion Logic (FIXED) ---
+    // --- 3. Deletion Logic ---
     socket.on('deleteMessage', (data) => {
         const { roomId, messageId, secretCode } = data;
         const room = rooms[roomId];
@@ -86,12 +85,11 @@ io.on('connection', (socket) => {
 
         const message = room.messages[msgIndex];
 
-        // --- SECURITY CHECK ---
+        // Security Check
         const roomHasCode = room.secretCode && room.secretCode.length > 0;
         const isAdmin = (roomHasCode && secretCode === room.secretCode);
         const isSender = (message.senderId === socket.id);
 
-        // Admin can delete ANYTHING. Sender can only delete THEIR OWN.
         if (isAdmin || isSender) {
             room.messages.splice(msgIndex, 1);
             io.to(roomId).emit('messageDeleted', { messageId });
