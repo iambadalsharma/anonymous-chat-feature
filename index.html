@@ -16,10 +16,9 @@
             --nav-height: 70px;
             
             /* CHAT THEME VARIABLES - UPDATED */
-            --term-bg: #000000;     /* Plain Black */
+            --term-bg: #000000;     
             --term-text: #e0e0e0;
-            --term-accent: #3b82f6; /* Website Blue */
-            --term-font: 'Courier New', Courier, monospace;
+            --term-accent: #3b82f6; 
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: var(--font-main); }
@@ -96,7 +95,7 @@
         .footer-links { display: flex; gap: 20px; flex-wrap: wrap; font-size: 0.85rem; }
         .footer-links a { color: var(--text-muted); text-decoration: none; }
 
-        /* ================= CHAT WIDGET (TERMINAL STYLE) ================= */
+        /* ================= CHAT WIDGET ================= */
         #widget-trigger {
             position: fixed; bottom: 30px; right: 30px;
             width: 60px; height: 60px; border-radius: 50%;
@@ -115,6 +114,7 @@
             z-index: 9999; display: none; flex-direction: column;
             overflow: hidden; opacity: 0; transform: translateY(15px);
             transition: all 0.25s ease;
+            font-family: var(--font-main); /* Smooth Font Applied */
         }
         #widget-container.active { opacity: 1; transform: translateY(0); }
 
@@ -123,7 +123,6 @@
             padding: 12px 15px; background: #111; border-bottom: 1px solid #333;
             display: flex; justify-content: space-between; align-items: center; 
             font-size: 0.9rem; font-weight: 600; color: #fff;
-            font-family: var(--font-main);
         }
         .header-title span { color: var(--term-accent); }
         .admin-controls { display: none; gap: 10px; align-items: center; margin-right: 10px; }
@@ -133,7 +132,7 @@
         /* BODY */
         .w-body { 
             flex: 1; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; 
-            background: var(--term-bg); /* Plain Black */
+            background: var(--term-bg);
         }
 
         /* LOGIN FORM */
@@ -141,63 +140,88 @@
             width: 100%; padding: 14px; margin-bottom: 12px;
             background: #111; border: 1px solid #333;
             border-radius: 4px; color: var(--term-text); outline: none;
-            font-family: var(--font-main); font-size: 16px;
+            font-size: 16px;
         }
         .login-form input:focus { border-color: var(--term-accent); }
         .login-btn {
             width: 100%; padding: 14px; background: var(--term-accent); color: white; border: none;
-            border-radius: 4px; font-weight: 600; cursor: pointer; font-family: var(--font-main);
+            border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 1rem;
         }
 
-        /* MESSAGES - Bottom Up */
+        /* MESSAGES - UPDATED: Concisely Stacked & Normal Font */
         #w-messages { 
             flex: 1; display: flex; flex-direction: column; 
-            gap: 2px; /* TIGHTER GAP */
+            gap: 1px; /* Minimal gap for concise look */
             padding-bottom: 10px;
-            justify-content: flex-end; /* Messages start from bottom */
+            justify-content: flex-end; 
         }
         
         .msg-line {
-            padding: 2px 8px; /* TIGHTER PADDING */
-            font-size: 0.9rem;
-            line-height: 1.3;
+            padding: 3px 8px;
+            font-size: 0.95rem; /* Clean readable size */
+            line-height: 1.4;
             color: var(--term-text);
             position: relative;
             cursor: pointer;
             border-left: 2px solid transparent;
-            font-family: var(--font-main); /* Standard font */
+            font-family: var(--font-main); /* Inter font - not monospace */
         }
         .msg-line:hover { background: rgba(255,255,255,0.05); border-left: 2px solid var(--term-accent); }
 
-        .sender-tag { font-weight: bold; margin-right: 5px; font-size: 0.85rem; font-family: var(--term-font); }
-        .msg-content { font-family: var(--font-main); }
-        .msg-time { float: right; font-size: 0.7rem; color: #555; margin-left: 10px; margin-top: 3px; font-family: var(--font-main); }
+        .sender-tag { font-weight: 700; margin-right: 6px; font-size: 0.9rem; }
+        .msg-content { font-weight: 400; color: #fff; }
+        .msg-time { float: right; font-size: 0.7rem; color: #555; margin-left: 10px; margin-top: 3px; }
 
-        /* FOOTER */
-        .w-footer { padding: 10px; border-top: 1px solid #333; display: none; gap: 8px; background: #111; align-items: center; }
-        .w-input { 
-            flex: 1; background: #000; border: 1px solid #333; 
-            padding: 10px; border-radius: 4px; color: var(--term-text); outline: none; 
-            font-family: var(--font-main); /* Normal Font */
-            font-size: 16px; 
+        /* FOOTER - REDESIGNED: Transparent & Smooth */
+        .w-footer { 
+            padding: 10px; 
+            border-top: 1px solid #222; /* Very subtle border */
+            display: none; 
+            gap: 10px; 
+            background: transparent; /* Seamless blend */
+            align-items: center; 
         }
-        .w-input:focus { border-color: var(--term-accent); }
-        .w-send { background: transparent; color: var(--term-accent); border: none; font-size: 1.2rem; cursor: pointer; padding: 0 10px; }
+        .w-input { 
+            flex: 1; 
+            background: #000; 
+            border: 1px solid #333; 
+            padding: 12px 16px; 
+            border-radius: 8px; /* Smooth corners */
+            color: white; 
+            outline: none; 
+            font-family: var(--font-main); 
+            font-size: 16px; 
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .w-input:focus { 
+            border-color: var(--term-accent); 
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); /* Blue Glow */
+        }
+        .w-send { 
+            background: transparent; 
+            color: var(--term-accent); 
+            border: none; 
+            font-size: 1.4rem; 
+            cursor: pointer; 
+            padding: 0 5px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .w-send:hover { color: #60a5fa; }
 
         /* CONTEXT MENU */
         #context-menu {
             position: absolute; display: none; z-index: 10000;
-            background: rgba(10, 10, 10, 0.95); border: 1px solid #444;
-            border-radius: 4px; padding: 5px 0; min-width: 150px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px);
+            background: rgba(20, 20, 20, 0.98); border: 1px solid #444;
+            border-radius: 6px; padding: 5px 0; min-width: 150px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
         }
         .ctx-item {
-            padding: 8px 15px; color: #ccc; font-size: 0.85rem; 
-            cursor: pointer; font-family: var(--font-main); display: flex; align-items: center; gap: 8px;
+            padding: 10px 15px; color: #eee; font-size: 0.9rem; 
+            cursor: pointer; display: flex; align-items: center; gap: 10px;
         }
         .ctx-item:hover { background: var(--term-accent); color: white; }
-        .ctx-item i { width: 15px; }
+        .ctx-item i { width: 16px; text-align: center; }
         .ctx-danger { color: #ff5555; }
         .ctx-danger:hover { background: #ff5555; color: white; }
 
@@ -307,7 +331,7 @@
     </footer>
 
 
-    <!-- ================= CHAT WIDGET (TERMINAL) ================= -->
+    <!-- ================= CHAT WIDGET ================= -->
     <div id="widget-trigger" onclick="toggleWidget()"><i class="fas fa-terminal"></i></div>
 
     <div id="widget-container">
@@ -340,7 +364,7 @@
         </div>
 
         <div class="w-footer" id="view-footer">
-            <span style="color:#555; margin-right:5px;">&gt;</span>
+            <span style="color:#555; margin-right:8px; font-size:1.2rem;">&gt;</span>
             <input type="text" class="w-input" id="inp-msg" placeholder="..." autocomplete="off">
             <button class="w-send" onclick="sendMsg()"><i class="fas fa-paper-plane"></i></button>
         </div>
@@ -356,13 +380,9 @@
     <script src="https://www.cloudinfomac.com/socket.io/socket.io.js"></script>
     <script>
         // --- UTILS ---
-        // Generate a persistent color from a string (name)
         function stringToColor(str) {
             let hash = 0;
-            for (let i = 0; i < str.length; i++) {
-                hash = str.charCodeAt(i) + ((hash << 5) - hash);
-            }
-            // Use HSL for better visibility (Saturation 70%, Lightness 60%)
+            for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
             const h = Math.abs(hash) % 360;
             return `hsl(${h}, 70%, 60%)`;
         }
@@ -428,7 +448,6 @@
             document.getElementById('w-messages').style.display='flex';
             document.getElementById('view-footer').style.display='flex';
             
-            // Show Admin Tools
             if (isAdmin) document.getElementById('admin-tools').style.display = 'flex';
             else document.getElementById('admin-tools').style.display = 'none';
 
@@ -479,7 +498,6 @@
             const userColor = stringToColor(msg.senderName);
             const userLabel = isMe ? 'me' : msg.senderName;
             
-            // Style: Name is colored, Text is standard
             div.innerHTML = `
                 <span class="sender-tag" style="color:${userColor}">${userLabel}</span>
                 <span class="msg-content">${msg.text}</span>
@@ -497,7 +515,6 @@
             b.scrollTop = b.scrollHeight;
         }
 
-        // --- CONTEXT MENU ---
         const ctxMenu = document.getElementById('context-menu');
         
         function showContext(e, id, text, isMe) {
