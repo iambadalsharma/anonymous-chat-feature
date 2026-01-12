@@ -234,7 +234,10 @@
         }
         .mobile-menu {
             position: fixed; top: var(--nav-height); left: 0; width: 100%; height: auto;
-            background: var(--bg-body); border-bottom: 1px solid var(--border);
+            background: rgba(10, 10, 10, 0.75);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--border);
             padding: 24px; display: none; flex-direction: column; gap: 16px; z-index: 999;
         }
         .mobile-menu.open { display: flex; }
@@ -636,14 +639,14 @@
         </div>
         <div class="container" style="max-width:600px; padding-bottom:80px;">
             <div class="card">
-                <form onsubmit="event.preventDefault(); alert('Message sent!');">
+                <form onsubmit="submitContactForm(event)">
                     <div style="margin-bottom:20px;">
                         <label style="display:block; margin-bottom:8px; font-size:0.9rem; color:var(--text-muted);">Email</label>
-                        <input type="email" class="login-input" required placeholder="you@company.com">
+                        <input id="contact-email" type="email" class="login-input" required placeholder="you@company.com">
                     </div>
                     <div style="margin-bottom:24px;">
                         <label style="display:block; margin-bottom:8px; font-size:0.9rem; color:var(--text-muted);">Message</label>
-                        <textarea class="login-input" rows="4" required placeholder="Tell us about your project..."></textarea>
+                        <textarea id="contact-message" class="login-input" rows="4" required placeholder="Tell us about your project..."></textarea>
                     </div>
                     <button class="btn btn-primary" style="width:100%; justify-content:center; padding:12px;">Send Message</button>
                 </form>
@@ -745,6 +748,27 @@
             el.classList.toggle('open');
         }
 
+        // --- CONTACT FORM SUBMIT ---
+        async function submitContactForm(e) {
+            e.preventDefault();
+            const email = document.getElementById('contact-email').value;
+            const message = document.getElementById('contact-message').value;
+            
+            try {
+                await fetch('/api/contact', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, message })
+                });
+                alert('Message sent to server! (Check logs)');
+                document.getElementById('contact-email').value = '';
+                document.getElementById('contact-message').value = '';
+            } catch (err) {
+                alert('Error sending message');
+                console.error(err);
+            }
+        }
+
         // --- CHAT LOGIC ---
         const socket = io('https://www.cloudinfomac.com');
         let myId, myRoom, myCode, isAdmin;
@@ -840,7 +864,7 @@
             html += `<span class="msg-time">${msg.timestamp}</span>`;
             
             if(isAdmin || isMe) {
-                html += `<div class="del-btn" onclick="deleteSingle(${msg.id}); event.stopPropagation();"><i class="fas fa-times"></i></div>`;
+                html += `<div class="del-btn" onclick="deleteSingle(${msg.id})"><i class="fas fa-times"></i></div>`;
             }
 
             div.innerHTML = html;
