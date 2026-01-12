@@ -12,9 +12,25 @@ const io = new Server(server, {
     }
 });
 
+// Middleware to parse incoming JSON data (Required for the contact form)
+app.use(express.json());
 app.use(express.static(__dirname));
 
-// --- In-Memory State ---
+// --- CONTACT FORM ENDPOINT ---
+app.post('/api/contact', (req, res) => {
+    const { email, message } = req.body;
+    
+    // This logs the message to your Server Terminal / Render Logs
+    console.log('====================================');
+    console.log('📬 NEW PROJECT INQUIRY RECEIVED');
+    console.log(`FROM: ${email}`);
+    console.log(`MESSAGE: ${message}`);
+    console.log('====================================');
+
+    res.json({ status: 'success', message: 'Inquiry received' });
+});
+
+// --- In-Memory State for Chat ---
 const rooms = {}; 
 let messageCounter = 1; 
 
@@ -104,7 +120,7 @@ io.on('connection', (socket) => {
         const isAdmin = (roomHasCode && secretCode === room.secretCode);
 
         if (isAdmin) {
-            room.messages = [];
+            room.messages = []; // Wipe history
             io.to(roomId).emit('chatCleared');
         }
     });
