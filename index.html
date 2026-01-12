@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cloud Infomac | Future Infrastructure</title>
+    <title>Cloud Infomac | Government Tenders & Business Growth</title>
     <!-- Inter Variable Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -13,11 +13,13 @@
             --bg: #030303;
             --bg-glass: rgba(10, 10, 10, 0.7);
             
-            --primary: #3b82f6;
-            --primary-glow: rgba(59, 130, 246, 0.5);
+            /* Professional Gold/Blue for Business/Gov trust */
+            --primary: #d4af37; /* Gold for Wealth/Growth */
+            --primary-glow: rgba(212, 175, 55, 0.5);
+            --accent: #3b82f6; /* Trust Blue */
             
             --border: rgba(255, 255, 255, 0.08);
-            --border-hover: rgba(255, 255, 255, 0.2);
+            --border-hover: rgba(212, 175, 55, 0.3);
             
             --text-main: #ffffff;
             --text-muted: #a1a1aa;
@@ -51,16 +53,17 @@
         
         .ambient-glow {
             position: fixed; top: -20%; left: 50%; width: 800px; height: 800px;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.15), transparent 70%);
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.1), transparent 70%);
             transform: translateX(-50%); filter: blur(80px); z-index: -2; pointer-events: none;
             animation: pulseGlow 8s infinite alternate ease-in-out;
         }
-        @keyframes pulseGlow { 0% { opacity: 0.5; } 100% { opacity: 0.8; } }
+        @keyframes pulseGlow { 0% { opacity: 0.3; } 100% { opacity: 0.6; } }
 
         /* --- LAYOUT UTILS --- */
         .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
         .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 32px; }
         .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
 
         /* --- NAVIGATION --- */
         nav {
@@ -75,7 +78,7 @@
         }
         
         .logo { font-weight: 700; font-size: 1rem; color: white; display: flex; align-items: center; gap: 10px; cursor: pointer; letter-spacing: -0.01em; }
-        .logo i { color: var(--primary); font-size: 1.1rem; filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.6)); }
+        .logo i { color: var(--primary); font-size: 1.1rem; filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.6)); }
 
         .nav-links { display: flex; gap: 32px; }
         .nav-link { 
@@ -90,10 +93,10 @@
             display: inline-flex; align-items: center; gap: 8px; justify-content: center;
         }
         .btn-primary { 
-            background: white; color: black; 
-            box-shadow: 0 0 20px rgba(255,255,255,0.1);
+            background: linear-gradient(135deg, #d4af37 0%, #a68a2e 100%); color: black; 
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.2); border: none;
         }
-        .btn-primary:hover { background: #e0e0e0; transform: translateY(-1px); }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 0 30px rgba(212, 175, 55, 0.4); }
         .btn-outline { 
             background: rgba(255,255,255,0.03); border-color: var(--border); color: white; 
         }
@@ -106,19 +109,23 @@
         
         .hero-badge {
             display: inline-flex; align-items: center; gap: 6px;
-            padding: 6px 12px; background: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 99px;
+            padding: 6px 12px; background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 99px;
             font-size: 0.75rem; color: var(--primary); font-weight: 500; margin-bottom: 24px;
         }
         
         h1 {
-            font-size: clamp(3rem, 6vw, 5rem); font-weight: 800; letter-spacing: -0.04em;
+            font-size: clamp(2.5rem, 5vw, 4.5rem); font-weight: 800; letter-spacing: -0.04em;
             line-height: 1.1; margin-bottom: 24px;
-            background: linear-gradient(180deg, #fff 0%, #aaa 100%);
+            background: linear-gradient(180deg, #fff 0%, #ccc 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .highlight-text {
+            background: linear-gradient(90deg, #d4af37, #f3e5ab);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
         .subtitle { 
-            font-size: 1.125rem; color: var(--text-muted); max-width: 580px; 
+            font-size: 1.125rem; color: var(--text-muted); max-width: 650px; 
             margin: 0 auto 40px; font-weight: 400; line-height: 1.7;
         }
         .hero-actions { display: flex; gap: 16px; justify-content: center; }
@@ -143,61 +150,34 @@
         .card p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; }
         
         .card-icon { 
-            width: 48px; height: 48px; background: rgba(255,255,255,0.03); border: 1px solid var(--border);
-            border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white;
+            width: 48px; height: 48px; background: rgba(212, 175, 55, 0.1); border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--primary);
             margin-bottom: 24px; font-size: 1.2rem;
-        }
-
-        /* --- TRUSTED LOGOS --- */
-        .logo-cloud {
-            display: flex; justify-content: center; gap: 48px; flex-wrap: wrap; opacity: 0.5;
-            margin-top: 40px; margin-bottom: 80px;
-        }
-        .logo-cloud i { font-size: 2rem; color: var(--text-muted); }
-
-        /* --- FEATURE ROWS --- */
-        .feature-row {
-            display: flex; align-items: center; gap: 64px; margin-bottom: 120px;
-        }
-        .feature-row.reverse { flex-direction: row-reverse; }
-        .feature-content { flex: 1; }
-        .feature-visual { 
-            flex: 1; background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01)); 
-            border: 1px solid var(--border); border-radius: 16px; height: 400px;
-            display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;
-        }
-        .feature-visual::before {
-            content: ''; position: absolute; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% 50%, rgba(59,130,246,0.1), transparent 60%);
-        }
-        .feature-tag { 
-            color: var(--primary); font-size: 0.8rem; font-weight: 600; text-transform: uppercase; 
-            letter-spacing: 0.05em; margin-bottom: 16px; display: block;
-        }
-        .feature-title { font-size: 2rem; margin-bottom: 16px; font-weight: 700; line-height: 1.2; }
-        .feature-desc { color: var(--text-muted); font-size: 1.05rem; margin-bottom: 32px; }
-        
-        .code-snippet {
-            font-family: 'Courier New', monospace; font-size: 0.9rem; color: #a1a1aa;
-            background: rgba(0,0,0,0.5); padding: 24px; border-radius: 8px; width: 80%;
-            border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.3); z-index: 1;
         }
 
         /* --- STATS GRID --- */
         .stat-card {
-            text-align: left; padding: 24px; border-left: 1px solid var(--border);
+            text-align: center; padding: 24px; border: 1px solid var(--border); border-radius: 12px; background: rgba(255,255,255,0.02);
         }
-        .stat-value { font-size: 2.5rem; font-weight: 800; color: white; letter-spacing: -0.03em; margin-bottom: 4px; }
+        .stat-value { font-size: 2.5rem; font-weight: 800; color: var(--primary); letter-spacing: -0.03em; margin-bottom: 4px; }
         .stat-label { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+
+        /* --- PORTAL BADGES --- */
+        .portal-badge {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+            padding: 15px; border-radius: 8px; text-align: center; font-weight: 600; font-size: 0.9rem; color: white;
+            transition: 0.3s; cursor: default;
+        }
+        .portal-badge:hover { border-color: var(--primary); background: rgba(212, 175, 55, 0.05); }
 
         /* --- TESTIMONIALS --- */
         .testimonial-card {
-            background: var(--bg-card); padding: 32px; border-radius: 16px; border: 1px solid var(--border);
+            background: var(--bg-glass); padding: 32px; border-radius: 16px; border: 1px solid var(--border);
         }
         .quote-icon { font-size: 1.5rem; color: var(--primary); margin-bottom: 20px; opacity: 0.5; }
-        .quote-text { font-size: 1.1rem; color: white; font-style: italic; margin-bottom: 24px; }
+        .quote-text { font-size: 1rem; color: white; font-style: italic; margin-bottom: 24px; }
         .author-meta { display: flex; align-items: center; gap: 12px; }
-        .author-avatar { width: 40px; height: 40px; background: #333; border-radius: 50%; }
+        .author-avatar { width: 40px; height: 40px; background: #333; border-radius: 50%; display:flex; align-items:center; justify-content:center; color:#555; font-size:0.8rem; font-weight:700;}
         .author-info h5 { font-size: 0.9rem; font-weight: 600; color: white; }
         .author-info span { font-size: 0.8rem; color: var(--text-muted); }
 
@@ -208,7 +188,7 @@
         }
         .cta-banner::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% 0%, rgba(59,130,246,0.15), transparent 70%);
+            background: radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.15), transparent 70%);
         }
 
         /* --- PAGE TRANSITIONS --- */
@@ -234,9 +214,7 @@
         }
         .mobile-menu {
             position: fixed; top: var(--nav-height); left: 0; width: 100%; height: auto;
-            background: rgba(10, 10, 10, 0.75);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
+            background: rgba(10, 10, 10, 0.9); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
             border-bottom: 1px solid var(--border);
             padding: 24px; display: none; flex-direction: column; gap: 16px; z-index: 999;
         }
@@ -248,8 +226,8 @@
         #widget-trigger {
             position: fixed; bottom: 32px; right: 32px;
             width: 56px; height: 56px; border-radius: 50%;
-            background: var(--primary); color: white;
-            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+            background: var(--primary); color: black;
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.4);
             display: flex; align-items: center; justify-content: center;
             cursor: pointer; z-index: 9990; transition: transform 0.2s;
         }
@@ -304,7 +282,7 @@
         }
         .msg-mine { 
             align-self: flex-end; text-align: right;
-            background: rgba(59, 130, 246, 0.4); /* Semi-transparent Primary */
+            background: rgba(212, 175, 55, 0.3); /* Gold Tint */
             color: white; 
             border-bottom-right-radius: 2px; 
         }
@@ -336,7 +314,7 @@
         }
         .login-input:focus { border-color: var(--primary); background: rgba(0,0,0,0.4); }
         .login-btn { 
-            width: 100%; padding: 12px; background: var(--primary); color: white; 
+            width: 100%; padding: 12px; background: var(--primary); color: black; 
             border: none; border-radius: 8px; font-weight: 600; cursor: pointer; 
         }
 
@@ -353,7 +331,7 @@
         }
         .w-input-field:focus { border-color: var(--primary); background: rgba(0,0,0,0.4); }
         .w-send-btn { 
-            background: var(--primary); color: white; border: none; 
+            background: var(--primary); color: black; border: none; 
             width: 36px; height: 36px; border-radius: 50%; cursor: pointer; 
             display: flex; align-items: center; justify-content: center; font-size: 0.9rem; 
         }
@@ -386,17 +364,17 @@
     <nav>
         <div class="nav-inner">
             <div class="logo" onclick="navTo('home')">
-                <div class="logo-icon"><i class="fas fa-cube"></i></div>
+                <div class="logo-icon" style="background:var(--primary); width:24px; height:24px; display:flex; justify-content:center; align-items:center; border-radius:4px; color:black;"><i class="fas fa-landmark" style="font-size:0.8rem;"></i></div>
                 Cloud Infomac
             </div>
             <div class="nav-links">
                 <a class="nav-link active" onclick="navTo('home')">Overview</a>
                 <a class="nav-link" onclick="navTo('services')">Services</a>
-                <a class="nav-link" onclick="navTo('platform')">Platform</a>
-                <a class="nav-link" onclick="navTo('contact')">Contact</a>
+                <a class="nav-link" onclick="navTo('sectors')">Govt Sectors</a>
+                <a class="nav-link" onclick="navTo('contact')">Consulting</a>
             </div>
             <div class="nav-actions">
-                <button class="btn btn-primary" onclick="navTo('contact')">Get Started</button>
+                <button class="btn btn-primary" onclick="navTo('contact')">Get Expert Advice</button>
             </div>
             <div class="mobile-toggle" onclick="toggleMobile()"><i class="fas fa-bars"></i></div>
         </div>
@@ -406,53 +384,54 @@
     <div class="mobile-menu" id="mobile-drawer">
         <a class="nav-link" onclick="navTo('home'); toggleMobile()">Overview</a>
         <a class="nav-link" onclick="navTo('services'); toggleMobile()">Services</a>
-        <a class="nav-link" onclick="navTo('platform'); toggleMobile()">Platform</a>
-        <a class="nav-link" onclick="navTo('contact'); toggleMobile()">Contact</a>
+        <a class="nav-link" onclick="navTo('sectors'); toggleMobile()">Govt Sectors</a>
+        <a class="nav-link" onclick="navTo('contact'); toggleMobile()">Consulting</a>
     </div>
 
     <!-- === PAGE: HOME === -->
     <div id="page-home" class="page active">
         <div class="container hero">
-            <div class="hero-badge"><i class="fas fa-bolt"></i> Next-Gen Architecture</div>
-            <h1>Building the Infrastructure<br>for the Future.</h1>
-            <p class="subtitle">Cloud Infomac delivers enterprise-grade digital solutions with speed, scalability, and security at the core. Empowering the next generation of business.</p>
+            <div class="hero-badge"><i class="fas fa-chart-line"></i> Strategic Growth Consultants</div>
+            <h1>Turn Your Business into a<br><span class="highlight-text">Unicorn Powerhouse.</span></h1>
+            <p class="subtitle">With 22+ years of experience, we help companies secure Government Tenders and scale operations exponentially. We've generated over ₹500 Crores in business for our clients.</p>
             <div class="hero-actions">
-                <button class="btn btn-primary" onclick="navTo('services')">View Solutions</button>
-                <button class="btn btn-outline" onclick="navTo('platform')">Our Platform</button>
+                <button class="btn btn-primary" onclick="navTo('services')">View Success Stories</button>
+                <button class="btn btn-outline" onclick="navTo('contact')">Book Free Consultation</button>
             </div>
             
-            <!-- Trusted By -->
-            <div class="logo-cloud">
-                <i class="fab fa-aws"></i>
-                <i class="fab fa-google"></i>
-                <i class="fab fa-microsoft"></i>
-                <i class="fab fa-stripe"></i>
-                <i class="fab fa-react"></i>
+            <!-- Key Stats -->
+            <div class="grid-3" style="margin-top: 60px;">
+                <div class="stat-card">
+                    <div class="stat-value">22+</div>
+                    <div class="stat-label">Years Experience</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">156+</div>
+                    <div class="stat-label">Clients Scaled</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">₹500Cr+</div>
+                    <div class="stat-label">Business Generated</div>
+                </div>
             </div>
         </div>
 
+        <!-- Government Portals -->
         <div class="section">
             <div class="container">
-                <div class="section-header">
-                    <h2 class="section-title">Why Cloud Infomac?</h2>
-                    <p style="color:var(--text-muted)">Engineering excellence meets design thinking.</p>
+                <div class="section-header" style="text-align: center;">
+                    <h2 class="section-title">We Master Government Portals</h2>
+                    <p style="color:var(--text-muted)">We handle the complexities of official bidding on all major platforms.</p>
                 </div>
-                <div class="grid-3">
-                    <div class="card">
-                        <div class="card-icon"><i class="fas fa-layer-group"></i></div>
-                        <h3>Full-Stack Engineering</h3>
-                        <p>End-to-end development using React, Node.js, and modern frameworks tailored to your specific business needs.</p>
-                    </div>
-                    <div class="card">
-                        <div class="card-icon"><i class="fas fa-shield-alt"></i></div>
-                        <h3>Enterprise Security</h3>
-                        <p>Bank-grade encryption and security protocols embedded into every layer of your application infrastructure.</p>
-                    </div>
-                    <div class="card">
-                        <div class="card-icon"><i class="fas fa-server"></i></div>
-                        <h3>Cloud Native</h3>
-                        <p>Scalable infrastructure architecture designed for AWS, Azure, and Google Cloud ensuring maximum uptime.</p>
-                    </div>
+                <div class="grid-4">
+                    <div class="portal-badge"><i class="fas fa-shopping-cart" style="color:var(--primary); margin-bottom:10px; display:block; font-size:1.5rem;"></i>GeM Portal</div>
+                    <div class="portal-badge"><i class="fas fa-file-contract" style="color:var(--primary); margin-bottom:10px; display:block; font-size:1.5rem;"></i>CPP Portal</div>
+                    <div class="portal-badge"><i class="fas fa-train" style="color:var(--primary); margin-bottom:10px; display:block; font-size:1.5rem;"></i>IREPS (Railways)</div>
+                    <div class="portal-badge"><i class="fas fa-building" style="color:var(--primary); margin-bottom:10px; display:block; font-size:1.5rem;"></i>NBCC</div>
+                    <div class="portal-badge"><i class="fas fa-map-marked-alt" style="color:var(--primary); margin-bottom:10px; display:block; font-size:1.5rem;"></i>State E-Procure</div>
+                    <div class="portal-badge"><i class="fas fa-oil-can" style="color:var(--primary); margin-bottom:10px; display:block; font-size:1.5rem;"></i>ONGC / IOCL</div>
+                    <div class="portal-badge"><i class="fas fa-university" style="color:var(--primary); margin-bottom:10px; display:block; font-size:1.5rem;"></i>MES / Defence</div>
+                    <div class="portal-badge"><i class="fas fa-network-wired" style="color:var(--primary); margin-bottom:10px; display:block; font-size:1.5rem;"></i>BSNL / MTNL</div>
                 </div>
             </div>
         </div>
@@ -460,37 +439,25 @@
         <!-- Detailed Features -->
         <div class="section">
             <div class="container">
-                <!-- Feature 1 -->
-                <div class="feature-row">
-                    <div class="feature-content">
-                        <span class="feature-tag">Global Scale</span>
-                        <h2 class="feature-title">Deployed at the Edge.</h2>
-                        <p class="feature-desc">Our infrastructure spans 35+ regions worldwide, ensuring your users get the fastest response times regardless of their location. Automatic failover and redundancy built-in.</p>
-                        <ul style="list-style: none; padding: 0; color: var(--text-muted);">
-                            <li style="margin-bottom: 8px;"><i class="fas fa-check" style="color: var(--primary); margin-right: 8px;"></i> Sub-50ms latency globally</li>
-                            <li style="margin-bottom: 8px;"><i class="fas fa-check" style="color: var(--primary); margin-right: 8px;"></i> 99.99% Uptime SLA</li>
-                            <li><i class="fas fa-check" style="color: var(--primary); margin-right: 8px;"></i> Real-time analytics</li>
-                        </ul>
-                    </div>
-                    <div class="feature-visual">
-                        <i class="fas fa-globe-americas" style="font-size: 120px; color: var(--primary); opacity: 0.8;"></i>
-                    </div>
+                <div class="section-header">
+                    <h2 class="section-title">Why Choose Us?</h2>
+                    <p style="color:var(--text-muted)">We don't just advise; we execute and deliver results.</p>
                 </div>
-
-                <!-- Feature 2 -->
-                <div class="feature-row reverse">
-                    <div class="feature-content">
-                        <span class="feature-tag">Developer Experience</span>
-                        <h2 class="feature-title">Built for Builders.</h2>
-                        <p class="feature-desc">We provide a robust API and CLI that integrates seamlessly into your existing CI/CD pipelines. Focus on code, not config.</p>
-                        <div class="code-snippet">
-                            $ npm install @cloudinfomac/sdk<br>
-                            $ infomac deploy --prod<br>
-                            <span style="color: #4ade80">> Build Complete (400ms)</span>
-                        </div>
+                <div class="grid-3">
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-gavel"></i></div>
+                        <h3>Tender Bidding Expertise</h3>
+                        <p>End-to-end management of the bidding process, from documentation to final submission, ensuring zero rejection rate.</p>
                     </div>
-                    <div class="feature-visual">
-                        <i class="fas fa-terminal" style="font-size: 100px; color: var(--text-muted); opacity: 0.5;"></i>
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-chart-line"></i></div>
+                        <h3>Unicorn Growth Strategy</h3>
+                        <p>We analyze your business model and implement proven strategies to scale your revenue exponentially.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon"><i class="fas fa-handshake"></i></div>
+                        <h3>Government Liaison</h3>
+                        <p>Leverage our network and understanding of bureaucratic processes to expedite approvals and payments.</p>
                     </div>
                 </div>
             </div>
@@ -500,39 +467,39 @@
         <div class="section" style="background: rgba(255,255,255,0.02);">
             <div class="container">
                 <div class="section-header" style="text-align: center;">
-                    <h2 class="section-title">Trusted by Innovators</h2>
+                    <h2 class="section-title">Success Stories</h2>
                 </div>
                 <div class="grid-3">
                     <div class="testimonial-card">
                         <i class="fas fa-quote-left quote-icon"></i>
-                        <p class="quote-text">"Cloud Infomac transformed our legacy backend into a modern, scalable powerhouse. The transition was seamless."</p>
+                        <p class="quote-text">"Cloud Infomac helped us navigate the GeM portal complexities. We secured our first ₹10 Cr contract within 3 months."</p>
                         <div class="author-meta">
-                            <div class="author-avatar"></div>
+                            <div class="author-avatar">AK</div>
                             <div class="author-info">
-                                <h5>Sarah Jenkins</h5>
-                                <span>CTO, TechFlow</span>
+                                <h5>Amit Kumar</h5>
+                                <span>CEO, BuildTech Infra</span>
                             </div>
                         </div>
                     </div>
                     <div class="testimonial-card">
                         <i class="fas fa-quote-left quote-icon"></i>
-                        <p class="quote-text">"The security features alone were worth the migration. Finally, a partner that takes data privacy seriously."</p>
+                        <p class="quote-text">"Their strategic insights transformed our manufacturing unit into a compliant government supplier. Highly recommended."</p>
                         <div class="author-meta">
-                            <div class="author-avatar"></div>
+                            <div class="author-avatar">RS</div>
                             <div class="author-info">
-                                <h5>David Chen</h5>
-                                <span>VP Engineering, DataCorp</span>
+                                <h5>Rajesh Singh</h5>
+                                <span>MD, Singh Exports</span>
                             </div>
                         </div>
                     </div>
                     <div class="testimonial-card">
                         <i class="fas fa-quote-left quote-icon"></i>
-                        <p class="quote-text">"Their support team is essentially an extension of our own engineering department. Incredible responsiveness."</p>
+                        <p class="quote-text">"From documentation to bidding strategy, their team is flawless. We are now a registered vendor for Indian Railways."</p>
                         <div class="author-meta">
-                            <div class="author-avatar"></div>
+                            <div class="author-avatar">VJ</div>
                             <div class="author-info">
-                                <h5>Elena Rodriguez</h5>
-                                <span>Product Lead, StartUpX</span>
+                                <h5>Vikram Joshi</h5>
+                                <span>Director, RailComponents Ltd</span>
                             </div>
                         </div>
                     </div>
@@ -543,9 +510,9 @@
         <!-- CTA Banner -->
         <div class="container" style="padding-bottom: 100px;">
             <div class="cta-banner">
-                <h2 style="font-size: 2.5rem; margin-bottom: 20px; position: relative; z-index: 1;">Ready to Scale?</h2>
-                <p style="color: var(--text-muted); margin-bottom: 30px; position: relative; z-index: 1;">Join hundreds of companies building the future with Cloud Infomac.</p>
-                <button class="btn btn-primary" style="position: relative; z-index: 1;" onclick="navTo('contact')">Start Your Project</button>
+                <h2 style="font-size: 2.5rem; margin-bottom: 20px; position: relative; z-index: 1;">Ready to win big?</h2>
+                <p style="color: var(--text-muted); margin-bottom: 30px; position: relative; z-index: 1;">Start your journey towards government contracts today.</p>
+                <button class="btn btn-primary" style="position: relative; z-index: 1;" onclick="navTo('contact')">Schedule Strategy Call</button>
             </div>
         </div>
     </div>
@@ -553,79 +520,68 @@
     <!-- === PAGE: SERVICES === -->
     <div id="page-services" class="page">
         <div class="container hero" style="padding-bottom:40px;">
-            <h1>Our Capabilities</h1>
-            <p class="subtitle">Comprehensive digital solutions for scaling companies.</p>
+            <h1>Our Services</h1>
+            <p class="subtitle">Comprehensive support for Government Business & Private Growth.</p>
         </div>
         <div class="container" style="padding-bottom:80px;">
             <div class="grid-3">
                 <div class="card">
-                    <div class="card-icon"><i class="fas fa-code"></i></div>
-                    <h3>Web Development</h3>
-                    <p>Responsive, high-performance websites and web applications.</p>
+                    <div class="card-icon"><i class="fas fa-file-contract"></i></div>
+                    <h3>GeM Registration</h3>
+                    <p>Complete profile completion, catalog management, and brand approval on Government e-Marketplace.</p>
                 </div>
                 <div class="card">
-                    <div class="card-icon"><i class="fas fa-mobile-alt"></i></div>
-                    <h3>Mobile Apps</h3>
-                    <p>Native and cross-platform mobile solutions for iOS and Android.</p>
+                    <div class="card-icon"><i class="fas fa-search-dollar"></i></div>
+                    <h3>Tender Scouting</h3>
+                    <p>We identify relevant tenders across all portals that match your business capabilities.</p>
                 </div>
                 <div class="card">
-                    <div class="card-icon"><i class="fas fa-database"></i></div>
-                    <h3>Data Solutions</h3>
-                    <p>Database design, optimization, and migration services.</p>
+                    <div class="card-icon"><i class="fas fa-clipboard-check"></i></div>
+                    <h3>Vendor Assessment</h3>
+                    <p>Preparing your company for QCI assessments and vendor capability verifications.</p>
                 </div>
                 <div class="card">
-                    <div class="card-icon"><i class="fas fa-cloud"></i></div>
-                    <h3>DevOps</h3>
-                    <p>CI/CD pipelines and automated infrastructure management.</p>
+                    <div class="card-icon"><i class="fas fa-balance-scale"></i></div>
+                    <h3>Legal & Compliance</h3>
+                    <p>Ensuring all GST, MSME, and Startup India documentations are perfect for bidding.</p>
                 </div>
                 <div class="card">
-                    <div class="card-icon"><i class="fas fa-paint-brush"></i></div>
-                    <h3>UI/UX Design</h3>
-                    <p>User-centric design that drives engagement and retention.</p>
+                    <div class="card-icon"><i class="fas fa-rocket"></i></div>
+                    <h3>Business Strategy</h3>
+                    <p>Roadmap creation to take your local business to a pan-India level using government supply chains.</p>
                 </div>
                 <div class="card">
-                    <div class="card-icon"><i class="fas fa-headset"></i></div>
-                    <h3>IT Consulting</h3>
-                    <p>Strategic technology planning and digital transformation.</p>
+                    <div class="card-icon"><i class="fas fa-hand-holding-usd"></i></div>
+                    <h3>L1 Pricing Strategy</h3>
+                    <p>Analytical pricing support to ensure you become the Lowest Bidder (L1) without losing margins.</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- === PAGE: PLATFORM === -->
-    <div id="page-platform" class="page">
+    <!-- === PAGE: SECTORS (NEW) === -->
+    <div id="page-sectors" class="page">
         <div class="container hero" style="padding-bottom:40px;">
-            <h1>Global Network</h1>
-            <p class="subtitle">Deployed on the edge for maximum performance.</p>
+            <h1>Sectors We Serve</h1>
+            <p class="subtitle">We have deep expertise across various government domains.</p>
         </div>
         <div class="container" style="padding-bottom:80px;">
             <div class="grid-2">
                 <div class="card">
-                    <h3>Performance Metrics</h3>
-                    <p style="margin-bottom:24px;">We optimize for speed and reliability.</p>
-                    <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:16px 0;">
-                        <span style="color:var(--text-muted)">Uptime SLA</span>
-                        <span style="color:white; font-weight:600;">99.99%</span>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:16px 0;">
-                        <span style="color:var(--text-muted)">Global Latency</span>
-                        <span style="color:white; font-weight:600;">&lt; 50ms</span>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; padding:16px 0;">
-                        <span style="color:var(--text-muted)">DDoS Protection</span>
-                        <span style="color:white; font-weight:600;">Automated</span>
-                    </div>
+                    <h3><i class="fas fa-hard-hat" style="color:var(--primary); margin-right:10px;"></i> Infrastructure & Construction</h3>
+                    <p style="margin-bottom:24px; color:var(--text-muted);">Roads, Highways (NHAI), CPWD projects, and Smart City initiatives.</p>
                 </div>
                 <div class="card">
-                    <h3>Tech Stack</h3>
-                    <p style="margin-bottom:24px;">Built on industry-leading technologies.</p>
-                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                        <span style="background:rgba(255,255,255,0.05); border:1px solid var(--border); padding:8px 16px; border-radius:6px; font-size:0.85rem;">React</span>
-                        <span style="background:rgba(255,255,255,0.05); border:1px solid var(--border); padding:8px 16px; border-radius:6px; font-size:0.85rem;">Node.js</span>
-                        <span style="background:rgba(255,255,255,0.05); border:1px solid var(--border); padding:8px 16px; border-radius:6px; font-size:0.85rem;">Python</span>
-                        <span style="background:rgba(255,255,255,0.05); border:1px solid var(--border); padding:8px 16px; border-radius:6px; font-size:0.85rem;">Docker</span>
-                        <span style="background:rgba(255,255,255,0.05); border:1px solid var(--border); padding:8px 16px; border-radius:6px; font-size:0.85rem;">AWS</span>
-                    </div>
+                    <h3><i class="fas fa-laptop-medical" style="color:var(--primary); margin-right:10px;"></i> Healthcare & Pharma</h3>
+                    <p style="margin-bottom:24px; color:var(--text-muted);">Supplying medical equipment and drugs to AIIMS, ESI Hospitals, and State Health Depts.</p>
+                </div>
+                <div class="card">
+                    <h3><i class="fas fa-wifi" style="color:var(--primary); margin-right:10px;"></i> IT & Electronics</h3>
+                    <p style="margin-bottom:24px; color:var(--text-muted);">Hardware supply, software implementation, and networking for Digital India projects.</p>
+                </div>
+                <div class="card">
+                    <h3><i class="fas fa-shield-alt" style="color:var(--primary); margin-right:10px;"></i> Defence & Aerospace</h3>
+                    <p style="margin-bottom:24px; color:var(--text-muted);">Specialized procurement for DRDO, Ordnance Factories, and Armed Forces.</p>
                 </div>
             </div>
         </div>
@@ -634,21 +590,21 @@
     <!-- === PAGE: CONTACT === -->
     <div id="page-contact" class="page">
         <div class="container hero" style="padding-bottom:40px;">
-            <h1>Start a Project</h1>
-            <p class="subtitle">Let's discuss how we can help your business grow.</p>
+            <h1>Contact Us</h1>
+            <p class="subtitle">Let's discuss your eligibility for government tenders.</p>
         </div>
         <div class="container" style="max-width:600px; padding-bottom:80px;">
             <div class="card">
                 <form onsubmit="submitContactForm(event)">
                     <div style="margin-bottom:20px;">
-                        <label style="display:block; margin-bottom:8px; font-size:0.9rem; color:var(--text-muted);">Email</label>
-                        <input id="contact-email" type="email" class="login-input" required placeholder="you@company.com">
+                        <label style="display:block; margin-bottom:8px; font-size:0.9rem; color:var(--text-muted);">Business Email / Phone</label>
+                        <input id="contact-email" type="text" class="login-input" required placeholder="contact@yourbusiness.com">
                     </div>
                     <div style="margin-bottom:24px;">
-                        <label style="display:block; margin-bottom:8px; font-size:0.9rem; color:var(--text-muted);">Message</label>
-                        <textarea id="contact-message" class="login-input" rows="4" required placeholder="Tell us about your project..."></textarea>
+                        <label style="display:block; margin-bottom:8px; font-size:0.9rem; color:var(--text-muted);">Query Details</label>
+                        <textarea id="contact-message" class="login-input" rows="4" required placeholder="I want to register for GeM..."></textarea>
                     </div>
-                    <button class="btn btn-primary" style="width:100%; justify-content:center; padding:12px;">Send Message</button>
+                    <button class="btn btn-primary" style="width:100%; justify-content:center; padding:12px;">Submit Request</button>
                 </form>
             </div>
         </div>
@@ -661,19 +617,19 @@
                 <div class="footer-col">
                     <h4 style="font-size:1rem; margin-bottom:16px; color:white;">Cloud Infomac</h4>
                     <p style="color:var(--text-muted); font-size:0.875rem;">
-                        Empowering businesses with cutting-edge digital solutions.
+                        Premier consultancy for Government Tenders & Business Growth.
                     </p>
                 </div>
                 <div class="footer-col">
                     <h4>Services</h4>
-                    <a href="#">Web Dev</a>
-                    <a href="#">Cloud</a>
-                    <a href="#">Mobile</a>
+                    <a href="#">GeM Portal</a>
+                    <a href="#">Tender Bidding</a>
+                    <a href="#">Consulting</a>
                 </div>
                 <div class="footer-col">
                     <h4>Company</h4>
-                    <a href="#">About</a>
-                    <a href="#">Careers</a>
+                    <a href="#">About Us</a>
+                    <a href="#">Success Stories</a>
                     <a href="#">Contact</a>
                 </div>
                 <div class="footer-col">
@@ -698,7 +654,7 @@
         <div class="w-header">
             <div style="display:flex; align-items:center; gap:10px;">
                 <div style="width:8px; height:8px; background:#10b981; border-radius:50%; box-shadow:0 0 8px #10b981;"></div>
-                <span id="chat-header-title">Live Chat</span>
+                <span id="chat-header-title">Consultant Support</span>
                 <span id="admin-badge" class="admin-badge">ADMIN</span>
             </div>
             <div style="display:flex; gap:12px; align-items:center;">
@@ -712,15 +668,15 @@
             <div id="view-login" class="login-view">
                 <div style="margin-bottom:24px;">
                     <div style="width:48px; height:48px; background:rgba(255,255,255,0.05); border-radius:12px; display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
-                        <i class="fas fa-lock" style="font-size:20px; color:white;"></i>
+                        <i class="fas fa-briefcase" style="font-size:20px; color:white;"></i>
                     </div>
-                    <h3 style="color:white; font-size:1.1rem; margin-bottom:4px;">Secure Channel</h3>
-                    <p style="color:var(--text-muted); font-size:0.9rem;">Enter Room ID to connect.</p>
+                    <h3 style="color:white; font-size:1.1rem; margin-bottom:4px;">Consultant Chat</h3>
+                    <p style="color:var(--text-muted); font-size:0.9rem;">Connect with a Tender Expert.</p>
                 </div>
-                <input type="text" id="inp-room" class="login-input" placeholder="Room ID">
-                <input type="text" id="inp-user" class="login-input" placeholder="Display Name">
-                <input type="password" id="inp-secret" class="login-input" placeholder="Access Code (Optional)">
-                <button class="login-btn" onclick="connectChat()">Connect</button>
+                <input type="text" id="inp-room" class="login-input" placeholder="Ticket ID (Room)">
+                <input type="text" id="inp-user" class="login-input" placeholder="Your Name">
+                <input type="password" id="inp-secret" class="login-input" placeholder="Admin Access Code">
+                <button class="login-btn" onclick="connectChat()">Start Chat</button>
             </div>
 
             <!-- Messages View -->
@@ -760,11 +716,11 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, message })
                 });
-                alert('Message sent to server! (Check logs)');
+                alert('Request sent! Our consultant will contact you shortly.');
                 document.getElementById('contact-email').value = '';
                 document.getElementById('contact-message').value = '';
             } catch (err) {
-                alert('Error sending message');
+                alert('Error sending request');
                 console.error(err);
             }
         }
@@ -773,20 +729,13 @@
         const socket = io('https://www.cloudinfomac.com');
         let myId, myRoom, myCode, isAdmin;
 
-        // Helper: Generate consistent color from name
-        function stringToColor(str) {
-            let hash = 0; for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
-            return `hsl(${Math.abs(hash) % 360}, 65%, 60%)`;
-        }
-
         function toggleWidget() {
             const el = document.getElementById('widget-container');
             if (el.style.display === 'flex') {
                 el.classList.remove('active');
-                setTimeout(() => { el.style.display = 'none'; }, 200); // Wait for transition
+                setTimeout(() => { el.style.display = 'none'; }, 200); 
             } else {
                 el.style.display = 'flex';
-                // Small delay to allow display:flex to apply before adding opacity class
                 setTimeout(() => { el.classList.add('active'); }, 10);
             }
         }
@@ -795,7 +744,7 @@
             const r = document.getElementById('inp-room').value.trim();
             const u = document.getElementById('inp-user').value.trim();
             const s = document.getElementById('inp-secret').value.trim();
-            if(!r) return alert("Please enter a Room ID");
+            if(!r) return alert("Please enter a Ticket ID (Room)");
             myRoom = r; myCode = s;
             socket.emit('joinRoom', { roomId: r, username: u, secretCode: s });
         }
@@ -807,7 +756,7 @@
             document.getElementById('view-login').style.display = 'none';
             document.getElementById('w-messages').style.display = 'flex';
             document.getElementById('view-footer').style.display = 'flex';
-            document.getElementById('chat-header-title').innerText = data.roomId;
+            document.getElementById('chat-header-title').innerText = "Ticket: " + data.roomId;
             
             if(isAdmin) {
                 document.getElementById('admin-badge').style.display = 'inline-block';
@@ -837,7 +786,7 @@
         document.getElementById('inp-msg').addEventListener('keypress', (e) => { if(e.key==='Enter') sendMsg(); });
 
         function deleteAll() {
-            if(confirm("Clear all messages for everyone?")) {
+            if(confirm("Clear all chat history?")) {
                 socket.emit('deleteAllMessages', { roomId: myRoom, secretCode: myCode });
             }
         }
@@ -850,7 +799,6 @@
             div.className = `msg-bubble ${isMe ? 'msg-mine' : 'msg-other'}`;
             div.id = `msg-${msg.id}`;
             
-            // Add click listener to toggle time details
             div.addEventListener('click', (e) => {
                 e.currentTarget.classList.toggle('show-details');
             });
