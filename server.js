@@ -70,7 +70,7 @@ io.on('connection', (socket) => {
         }
     });
 
-    // --- 3. Single Deletion Logic ---
+    // --- 3. Deletion Logic ---
     socket.on('deleteMessage', (data) => {
         const { roomId, messageId, secretCode } = data;
         const room = rooms[roomId];
@@ -82,6 +82,7 @@ io.on('connection', (socket) => {
 
         const message = room.messages[msgIndex];
 
+        // Security Check
         const roomHasCode = room.secretCode && room.secretCode.length > 0;
         const isAdmin = (roomHasCode && secretCode === room.secretCode);
         const isSender = (message.senderId === socket.id);
@@ -103,7 +104,7 @@ io.on('connection', (socket) => {
         const isAdmin = (roomHasCode && secretCode === room.secretCode);
 
         if (isAdmin) {
-            room.messages = []; // Wipe history
+            room.messages = [];
             io.to(roomId).emit('chatCleared');
         }
     });
