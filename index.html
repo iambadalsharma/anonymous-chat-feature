@@ -240,7 +240,7 @@
         .mobile-menu.open { display: flex; }
 
         /* ========================================= */
-        /* === CHAT WIDGET (Fixed Animation) === */
+        /* === CHAT WIDGET (Minimal Glass) === */
         /* ========================================= */
         #widget-trigger {
             position: fixed; bottom: 32px; right: 32px;
@@ -255,9 +255,12 @@
         #widget-container {
             position: fixed; bottom: 100px; right: 32px;
             width: 360px; height: 520px; max-height: 80vh;
-            background: var(--bg-body);
-            border: 1px solid var(--border); border-radius: 12px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            /* Glassmorphism Background */
+            background: rgba(10, 10, 10, 0.65); 
+            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            border-radius: 16px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
             z-index: 9999; 
             display: none; /* Initially Hidden */
             flex-direction: column;
@@ -268,18 +271,24 @@
         #widget-container.active { opacity: 1; transform: translateY(0); }
 
         .w-header {
-            padding: 16px; border-bottom: 1px solid var(--border); background: var(--bg-card);
+            padding: 16px; 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
+            background: rgba(255, 255, 255, 0.03);
             display: flex; justify-content: space-between; align-items: center;
             font-size: 0.875rem; font-weight: 600; color: white;
         }
         .admin-badge { background: #ef4444; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; margin-left: 8px; display: none; }
 
-        .w-body { flex: 1; padding: 16px; overflow-y: auto; background: var(--bg-body); display: flex; flex-direction: column; }
+        .w-body { 
+            flex: 1; padding: 16px; overflow-y: auto; 
+            background: transparent; /* Let glass pass through */
+            display: flex; flex-direction: column; 
+        }
 
         /* Messages */
         #w-messages { 
             flex: 1; display: flex; flex-direction: column; 
-            gap: 8px; /* Comfortable spacing */
+            gap: 8px; 
             padding-bottom: 8px;
             justify-content: flex-end; 
         }
@@ -287,48 +296,59 @@
         .msg-bubble {
             max-width: 85%; padding: 10px 14px; border-radius: 12px;
             font-size: 0.9rem; line-height: 1.4; position: relative;
-            word-wrap: break-word;
+            word-wrap: break-word; cursor: pointer;
+            transition: background 0.2s ease;
         }
         .msg-mine { 
             align-self: flex-end; text-align: right;
-            background: rgba(59, 130, 246, 0.2); 
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            color: #60a5fa;
+            background: rgba(59, 130, 246, 0.4); /* Semi-transparent Primary */
+            color: white; 
+            border-bottom-right-radius: 2px; 
         }
         .msg-other { 
             align-self: flex-start; 
-            background: var(--bg-card); 
-            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.08); /* Minimal Grey */
             color: var(--text-main); 
             border-bottom-left-radius: 2px; 
         }
         
-        .msg-sender { font-size: 0.7rem; margin-bottom: 4px; opacity: 0.7; font-weight: 600; }
-        .msg-time { font-size: 0.65rem; opacity: 0.5; margin-top: 4px; text-align: right; display: block; }
+        .msg-sender { font-size: 0.7rem; margin-bottom: 2px; opacity: 0.6; font-weight: 600; }
+        
+        /* Time Hidden by default, shown on hover/click */
+        .msg-time { 
+            font-size: 0.65rem; opacity: 0; margin-top: 0; max-height: 0; overflow: hidden;
+            transition: all 0.3s ease; text-align: right; display: block; 
+        }
+        .msg-bubble.show-details .msg-time,
+        .msg-bubble:hover .msg-time { 
+            opacity: 0.6; margin-top: 4px; max-height: 20px; 
+        }
 
         /* Login Form */
         .login-view { padding: 20px; text-align: center; }
         .login-input { 
-            width: 100%; padding: 12px; margin-bottom: 12px; background: var(--bg-card);
-            border: 1px solid var(--border); border-radius: 6px; color: white; 
+            width: 100%; padding: 12px; margin-bottom: 12px; background: rgba(0,0,0,0.2);
+            border: 1px solid var(--border); border-radius: 8px; color: white; 
             font-family: var(--font-main); font-size: 16px; outline: none;
         }
-        .login-input:focus { border-color: var(--primary); }
+        .login-input:focus { border-color: var(--primary); background: rgba(0,0,0,0.4); }
         .login-btn { 
             width: 100%; padding: 12px; background: var(--primary); color: white; 
-            border: none; border-radius: 6px; font-weight: 600; cursor: pointer; 
+            border: none; border-radius: 8px; font-weight: 600; cursor: pointer; 
         }
 
         /* Footer Input */
         .w-footer { 
-            padding: 12px; border-top: 1px solid var(--border); background: var(--bg-card);
+            padding: 12px; 
+            border-top: 1px solid rgba(255, 255, 255, 0.05); 
+            background: rgba(255, 255, 255, 0.02);
             display: none; gap: 8px; align-items: center; 
         }
         .w-input-field {
-            flex: 1; background: var(--bg-body); border: 1px solid var(--border);
+            flex: 1; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1);
             padding: 10px 14px; border-radius: 20px; color: white; outline: none; font-size: 16px;
         }
-        .w-input-field:focus { border-color: var(--primary); }
+        .w-input-field:focus { border-color: var(--primary); background: rgba(0,0,0,0.4); }
         .w-send-btn { 
             background: var(--primary); color: white; border: none; 
             width: 36px; height: 36px; border-radius: 50%; cursor: pointer; 
@@ -806,6 +826,11 @@
             div.className = `msg-bubble ${isMe ? 'msg-mine' : 'msg-other'}`;
             div.id = `msg-${msg.id}`;
             
+            // Add click listener to toggle time details
+            div.addEventListener('click', (e) => {
+                e.currentTarget.classList.toggle('show-details');
+            });
+            
             let html = '';
             if(!isMe) {
                 html += `<div class="msg-sender">${msg.senderName}</div>`;
@@ -815,7 +840,7 @@
             html += `<span class="msg-time">${msg.timestamp}</span>`;
             
             if(isAdmin || isMe) {
-                html += `<div class="del-btn" onclick="deleteSingle(${msg.id})"><i class="fas fa-times"></i></div>`;
+                html += `<div class="del-btn" onclick="deleteSingle(${msg.id}); event.stopPropagation();"><i class="fas fa-times"></i></div>`;
             }
 
             div.innerHTML = html;
