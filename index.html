@@ -240,7 +240,7 @@
         .mobile-menu.open { display: flex; }
 
         /* ========================================= */
-        /* === CHAT WIDGET (Clean Modern Style) === */
+        /* === CHAT WIDGET (Fixed Animation) === */
         /* ========================================= */
         #widget-trigger {
             position: fixed; bottom: 32px; right: 32px;
@@ -258,10 +258,13 @@
             background: var(--bg-body);
             border: 1px solid var(--border); border-radius: 12px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-            z-index: 9999; display: none; flex-direction: column;
+            z-index: 9999; 
+            display: none; /* Initially Hidden */
+            flex-direction: column;
             overflow: hidden; opacity: 0; transform: translateY(10px);
-            transition: all 0.2s ease;
+            transition: opacity 0.2s ease, transform 0.2s ease;
         }
+        /* Active state for animation */
         #widget-container.active { opacity: 1; transform: translateY(0); }
 
         .w-header {
@@ -734,8 +737,14 @@
 
         function toggleWidget() {
             const el = document.getElementById('widget-container');
-            if(el.classList.contains('active')) el.classList.remove('active');
-            else el.classList.add('active');
+            if (el.style.display === 'flex') {
+                el.classList.remove('active');
+                setTimeout(() => { el.style.display = 'none'; }, 200); // Wait for transition
+            } else {
+                el.style.display = 'flex';
+                // Small delay to allow display:flex to apply before adding opacity class
+                setTimeout(() => { el.classList.add('active'); }, 10);
+            }
         }
 
         function connectChat() {
